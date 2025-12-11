@@ -1,4 +1,4 @@
-package com.furkanozendev.furkanozendev
+package com.furkanozendev
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
