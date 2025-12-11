@@ -1,4 +1,4 @@
-package com.furkanozendev.feature.boot.components
+package com.furkanozendev.core.designsystem.colors
 
 import androidx.compose.ui.graphics.Color
 

@@ -37,13 +37,12 @@ class PresentationConventionPlugin : BaseConventionPlugin() {
 
         extensions.getByType<KotlinMultiplatformExtension>().apply {
             sourceSets.apply {
-                commonMain {
+                webMain {
                     compilerOptions {
                         freeCompilerArgs.add("-Xcontext-parameters")
                     }
                 }
-                commonMain.dependencies {
-                    // Compose UI
+                webMain.dependencies {
                     implementation(composeDependencies.runtime)
                     implementation(composeDependencies.foundation)
                     implementation(composeDependencies.material3)

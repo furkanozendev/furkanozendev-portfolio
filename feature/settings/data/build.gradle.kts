@@ -4,8 +4,7 @@ plugins {
 
 kotlin {
     sourceSets {
-        val commonMain by getting
-        commonMain.dependencies {
+        webMain.dependencies {
             implementation(project(":core:data"))
             implementation(project(":feature:settings:domain"))
 

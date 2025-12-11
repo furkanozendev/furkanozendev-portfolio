@@ -15,6 +15,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.unit.dp
+import com.furkanozendev.core.designsystem.colors.BootColors
 
 @Composable
 fun AndroidBootProgress(

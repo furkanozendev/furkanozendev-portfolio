@@ -4,7 +4,7 @@ plugins {
 
 kotlin {
     sourceSets {
-        commonMain.dependencies {
+        webMain.dependencies {
             implementation(project(":feature:boot"))
             implementation(project(":feature:portfolio"))
             implementation(project(":feature:settings"))

@@ -5,8 +5,7 @@ plugins {
 
 kotlin {
     sourceSets {
-        val commonMain by getting
-        commonMain.dependencies {
+        webMain.dependencies {
             implementation(libs.kotlinx.serialization.json)
         }
     }

@@ -4,8 +4,7 @@ plugins {
 
 kotlin {
     sourceSets {
-        val commonMain by getting
-        commonMain.dependencies {
+        webMain.dependencies {
             api(project(":feature:settings:data"))
             api(project(":feature:settings:domain"))
             api(project(":feature:settings:presentation"))

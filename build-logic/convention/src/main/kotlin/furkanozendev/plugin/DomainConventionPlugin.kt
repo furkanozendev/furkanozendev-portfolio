@@ -32,12 +32,12 @@ class DomainConventionPlugin : BaseConventionPlugin() {
     override fun Project.configureCommonDependencies() {
         extensions.getByType<KotlinMultiplatformExtension>().apply {
             sourceSets.apply {
-                commonMain {
+                webMain {
                     compilerOptions {
                         freeCompilerArgs.add("-Xcontext-parameters")
                     }
                 }
-                commonMain.dependencies {
+                webMain.dependencies {
                     implementation(libs.findLibrary("kotlinx-coroutines-core").get())
                 }
             }

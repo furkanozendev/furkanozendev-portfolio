@@ -35,12 +35,12 @@ class ApplicationConventionPlugin : BaseConventionPlugin() {
         val composeDependencies = extensions.getByType<ComposeExtension>().dependencies
         extensions.getByType<KotlinMultiplatformExtension>().apply {
             sourceSets.apply {
-                commonMain {
+                webMain {
                     compilerOptions {
                         freeCompilerArgs.add("-Xcontext-parameters")
                     }
                 }
-                commonMain.dependencies {
+                webMain.dependencies {
                     implementation(composeDependencies.runtime)
                     implementation(composeDependencies.foundation)
                     implementation(composeDependencies.material3)
@@ -61,7 +61,7 @@ class ApplicationConventionPlugin : BaseConventionPlugin() {
                     implementation(libs.findLibrary("koin-core").get())
                     implementation(libs.findLibrary("koin-compose").get())
                 }
-                commonTest.dependencies {
+                webTest.dependencies {
                     implementation(libs.findLibrary("kotlin-test").get())
                 }
             }
