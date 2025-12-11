@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.furkanozendev.core.designsystem.colors.HomeColors
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlinx.coroutines.delay
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun SystemTopBar(
@@ -63,20 +69,20 @@ fun SystemTopBar(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun SystemTime() {
     var timeString by remember { mutableStateOf("12:00") }
 
-    /*LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         while (true) {
             val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-            // Pad minutes with zero (e.g., 12:05)
             val hour = now.hour.toString().padStart(2, '0')
             val minute = now.minute.toString().padStart(2, '0')
             timeString = "$hour:$minute"
-            delay(1000L * 30) // Update every 30 seconds
+            delay(1000L * 30)
         }
-    }*/
+    }
 
     Text(
         text = timeString,

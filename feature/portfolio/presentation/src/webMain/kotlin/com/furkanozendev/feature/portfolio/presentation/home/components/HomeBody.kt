@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,42 +20,44 @@ fun HomeBody(
 ) {
     BoxWithConstraints(modifier = modifier) {
         val isDesktop = maxWidth > 800.dp
-        val scrollState = rememberScrollState()
 
         if (isDesktop) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(52.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
             ) {
-                Column(
+                Row(
                     modifier = Modifier
-                        .weight(0.4f)
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                        .fillMaxSize()
+                        .padding(52.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.Top
                 ) {
-                    ProfileWidget(modifier = Modifier.weight(1f).fillMaxWidth())
-                    TechStackWidget(modifier = Modifier.weight(1f).fillMaxWidth())
-                }
+                    Column(
+                        modifier = Modifier
+                            .weight(0.4f)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        ProfileWidget(modifier = Modifier.weight(1f).fillMaxWidth())
+                        TechStackWidget(modifier = Modifier.weight(1f).fillMaxWidth())
+                    }
 
-                Column(
-                    modifier = Modifier
-                        .weight(0.6f)
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    ExperienceWidget(modifier = Modifier.weight(0.65f).fillMaxWidth())
-                    ProjectsWidget(modifier = Modifier.weight(0.35f).fillMaxWidth())
+                    Column(
+                        modifier = Modifier
+                            .weight(0.6f)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        ExperienceWidget(modifier = Modifier.weight(0.65f).fillMaxWidth())
+                        ProjectsWidget(modifier = Modifier.weight(0.35f).fillMaxWidth())
+                    }
                 }
             }
         } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {

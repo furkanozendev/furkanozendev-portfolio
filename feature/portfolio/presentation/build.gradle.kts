@@ -10,6 +10,7 @@ kotlin {
             implementation(project(":feature:portfolio:domain"))
 
             implementation(compose.materialIconsExtended)
+            implementation(libs.kotlinx.datetime)
         }
     }
 }
