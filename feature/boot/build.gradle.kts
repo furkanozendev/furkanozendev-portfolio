@@ -4,15 +4,13 @@ plugins {
 
 kotlin {
     sourceSets {
+        commonMain.dependencies {
+            implementation(compose.components.resources)
+        }
+
         webMain.dependencies {
             implementation(project(":core:presentation"))
             implementation(project(":core:designsystem"))
         }
     }
-}
-
-compose.resources {
-    publicResClass = false
-    packageOfResClass = "com.furkanozendev.boot.generated.resources"
-    generateResClass = always
 }

@@ -20,9 +20,7 @@ import com.furkanozendev.core.designsystem.components.SystemBottomBar
 import com.furkanozendev.core.designsystem.components.SystemTopBar
 import com.furkanozendev.feature.portfolio.presentation.home.components.HomeBody
 import com.furkanozendev.feature.portfolio.presentation.home.components.NotificationShade
-import com.furkanozendev.feature.portfolio.presentation.home.state.mouseWheelShadeTrigger
 import com.furkanozendev.feature.portfolio.presentation.home.state.rememberShadeState
-import com.furkanozendev.feature.portfolio.presentation.home.state.shadeTrigger
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -58,9 +56,8 @@ fun HomeScreen() {
             HomeBody(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth()
-                    .shadeTrigger(shadeState)
-                    .mouseWheelShadeTrigger(shadeState)
+                    .fillMaxWidth(),
+                shadeState = shadeState
             )
 
             SystemBottomBar(

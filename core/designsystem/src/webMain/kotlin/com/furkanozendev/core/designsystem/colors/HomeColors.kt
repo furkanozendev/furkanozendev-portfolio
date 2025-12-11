@@ -9,6 +9,7 @@ object HomeColors {
 
     // Body
     val BodyBackground = Color(0xFF161B22)
+    val BodyTextMain = Color(0xFFFFFFFF)
 
     // Bottom Bar
     val SystemBottomBarBackground = Color(0xFF0D1117)

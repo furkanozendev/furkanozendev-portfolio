@@ -16,10 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.furkanozendev.boot.generated.resources.Res
-import com.furkanozendev.boot.generated.resources.android
 import com.furkanozendev.core.designsystem.colors.BootColors
 import com.furkanozendev.feature.boot.components.AndroidBootProgress
+import furkanozendev.feature.boot.generated.resources.Res
+import furkanozendev.feature.boot.generated.resources.android
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 

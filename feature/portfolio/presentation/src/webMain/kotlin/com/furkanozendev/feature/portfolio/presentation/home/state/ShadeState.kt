@@ -1,5 +1,6 @@
 package com.furkanozendev.feature.portfolio.presentation.home.state
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -111,6 +112,30 @@ fun Modifier.mouseWheelShadeTrigger(shadeState: ShadeState): Modifier {
                     if (pixels > 0) {
                         shadeState.updatePull(pixels, isFling = false)
                     } else if (pixels < 0 && shadeState.progress > 0f) {
+                        shadeState.updatePull(pixels, isFling = false)
+                    }
+                }
+            }
+        }
+    }
+}
+
+fun Modifier.smartMouseWheelTrigger(
+    shadeState: ShadeState,
+    scrollState: ScrollState
+): Modifier {
+    return this.pointerInput(Unit) {
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent()
+
+                if (event.type == PointerEventType.Scroll) {
+                    val change = event.changes.firstOrNull() ?: continue
+                    val delta = change.scrollDelta
+
+                    val pixels = delta.y * -50f
+
+                   if (shadeState.progress > 0f || (pixels > 0 && scrollState.value == 0)) {
                         shadeState.updatePull(pixels, isFling = false)
                     }
                 }

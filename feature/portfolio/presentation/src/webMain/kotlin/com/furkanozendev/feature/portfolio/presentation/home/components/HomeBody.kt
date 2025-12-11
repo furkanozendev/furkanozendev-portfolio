@@ -9,21 +9,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.furkanozendev.feature.portfolio.presentation.home.state.ShadeState
+import com.furkanozendev.feature.portfolio.presentation.home.state.mouseWheelShadeTrigger
+import com.furkanozendev.feature.portfolio.presentation.home.state.shadeTrigger
+import com.furkanozendev.feature.portfolio.presentation.home.state.smartMouseWheelTrigger
 
 @Composable
 fun HomeBody(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    shadeState: ShadeState
 ) {
     BoxWithConstraints(modifier = modifier) {
-        val isDesktop = maxWidth > 800.dp
+        val isWideLayout = maxWidth > 800.dp
 
-        if (isDesktop) {
+        if (isWideLayout) {
             Column(
                 modifier = Modifier
+                    .shadeTrigger(shadeState)
+                    .mouseWheelShadeTrigger(shadeState)
                     .fillMaxSize()
             ) {
                 Row(
@@ -40,6 +49,9 @@ fun HomeBody(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         ProfileWidget(modifier = Modifier.weight(1f).fillMaxWidth())
+
+                        AppCell(modifier = Modifier.fillMaxWidth())
+
                         TechStackWidget(modifier = Modifier.weight(1f).fillMaxWidth())
                     }
 
@@ -55,13 +67,18 @@ fun HomeBody(
                 }
             }
         } else {
+            val scrollState = rememberScrollState()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .smartMouseWheelTrigger(shadeState, scrollState)
+                    .verticalScroll(scrollState)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ProfileWidget(modifier = Modifier.height(300.dp).fillMaxWidth())
+                AppCell(modifier = Modifier.fillMaxWidth())
                 TechStackWidget(modifier = Modifier.height(250.dp).fillMaxWidth())
                 ExperienceWidget(modifier = Modifier.height(400.dp).fillMaxWidth())
                 ProjectsWidget(modifier = Modifier.height(200.dp).fillMaxWidth())
