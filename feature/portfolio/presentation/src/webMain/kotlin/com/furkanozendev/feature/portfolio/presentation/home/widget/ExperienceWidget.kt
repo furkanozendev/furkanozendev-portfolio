@@ -1,8 +1,7 @@
-package com.furkanozendev.feature.portfolio.presentation.home.components
+package com.furkanozendev.feature.portfolio.presentation.home.widget
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.papara_logo
 import org.jetbrains.compose.resources.painterResource
@@ -95,7 +95,7 @@ fun ExperienceWidget(
             }
 
             Column(
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier,
             ) {
                 ExperienceTreeNode(
                     title = "Android Developer",

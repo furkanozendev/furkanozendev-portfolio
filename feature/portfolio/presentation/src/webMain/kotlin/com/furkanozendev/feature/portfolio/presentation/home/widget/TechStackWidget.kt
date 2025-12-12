@@ -1,4 +1,4 @@
-package com.furkanozendev.feature.portfolio.presentation.home.components
+package com.furkanozendev.feature.portfolio.presentation.home.widget
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 
 @Composable
 fun TechStackWidget(

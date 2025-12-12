@@ -1,4 +1,4 @@
-package com.furkanozendev.feature.portfolio.presentation.home.components
+package com.furkanozendev.feature.portfolio.presentation.home.widget
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -56,6 +56,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.profile_pic
 import kotlinx.coroutines.delay

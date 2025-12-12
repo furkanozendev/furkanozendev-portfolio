@@ -1,0 +1,65 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="bg-duelist" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#050811"/>
+            <stop offset="40%" stop-color="#111322"/>
+            <stop offset="100%" stop-color="#1A1024"/>
+        </linearGradient>
+
+        <linearGradient id="accent-duelist" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#FFCC00"/>
+            <stop offset="100%" stop-color="#00E5FF"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Background -->
+    <rect width="1280" height="720" fill="url(#bg-duelist)"/>
+
+    <!-- Pixel-style blocks -->
+    <g opacity="0.2">
+        <rect x="140" y="160" width="80" height="80" fill="#FFCC00"/>
+        <rect x="220" y="160" width="40" height="40" fill="#00E5FF"/>
+        <rect x="960" y="480" width="96" height="96" fill="#FFCC00"/>
+        <rect x="880" y="520" width="40" height="40" fill="#00E5FF"/>
+    </g>
+
+    <!-- Centered card frame -->
+    <rect x="380" y="150" width="520" height="420" rx="32" ry="32"
+          fill="#11111C" stroke="#FFCC00" stroke-width="2" opacity="0.85"/>
+
+    <!-- Inner card highlight -->
+    <rect x="402" y="172" width="476" height="200" rx="24" ry="24"
+          fill="#181824" stroke="#333347" stroke-width="1"/>
+
+    <!-- Stylized “card” elements -->
+    <circle cx="460" cy="230" r="40" fill="#26263A"/>
+    <rect x="520" y="205" width="220" height="18" rx="9" ry="9" fill="#2C2C44"/>
+    <rect x="520" y="233" width="180" height="12" rx="6" ry="6" fill="#2C2C44"/>
+    <rect x="520" y="255" width="140" height="10" rx="5" ry="5" fill="#2C2C44"/>
+
+    <!-- Title text -->
+    <text x="400" y="420" fill="#F5F5F5" font-size="34" font-weight="700"
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+        DuelistAI · Card Battler
+    </text>
+
+    <!-- Status pill -->
+    <rect x="400" y="440" rx="14" ry="14" width="260" height="30"
+          fill="#332E11" stroke="#F1C40F" stroke-width="1"/>
+    <text x="415" y="460" fill="#F1C40F" font-size="14" font-weight="600"
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+        In development · Private project
+    </text>
+
+    <!-- Subtitle -->
+    <text x="400" y="490" fill="#D0D0DD" font-size="16"
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+        Kotlin Multiplatform · Compose UI · Ktor backend · Pixel-art driven UX
+    </text>
+
+    <!-- Bottom tech line -->
+    <text x="400" y="520" fill="#8BE9FD" font-size="13"
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+        Game system prototyping · AI-generated content experiments · Not published yet
+    </text>
+</svg>
