@@ -12,11 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AlternateEmail
-import androidx.compose.material.icons.rounded.CameraAlt
-import androidx.compose.material.icons.rounded.Code
-import androidx.compose.material.icons.rounded.Work
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,10 +26,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.furkanozendev.core.designsystem.colors.HomeColors
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
+import furkanozendev.feature.portfolio.presentation.generated.resources.cv_ic
 import furkanozendev.feature.portfolio.presentation.generated.resources.github_ic
-import furkanozendev.feature.portfolio.presentation.generated.resources.linkedin_ic
-import furkanozendev.feature.portfolio.presentation.generated.resources.instagram_ic
 import furkanozendev.feature.portfolio.presentation.generated.resources.gmail_ic
+import furkanozendev.feature.portfolio.presentation.generated.resources.linkedin_ic
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -54,8 +49,8 @@ fun AppCell(
         listOf(
             SocialAppItem("LinkedIn", Res.drawable.linkedin_ic, "https://www.linkedin.com/in/furkanozendev/"),
             SocialAppItem("GitHub", Res.drawable.github_ic, "https://github.com/furkanozendev"),
-            SocialAppItem("Instagram", Res.drawable.instagram_ic, "https://www.instagram.com/furkanozendev?igsh=eDc4b2o0cTR4eWo2"),
-            SocialAppItem("Mail", Res.drawable.gmail_ic, "mailto:furkanozendev@gmail.com")
+            SocialAppItem("Mail", Res.drawable.gmail_ic, "mailto:furkanozendev@gmail.com"),
+            SocialAppItem("Download My Cv", Res.drawable.cv_ic, "")
         )
     }
 

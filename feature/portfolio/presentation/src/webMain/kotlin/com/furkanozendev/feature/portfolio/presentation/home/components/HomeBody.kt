@@ -1,6 +1,7 @@
 package com.furkanozendev.feature.portfolio.presentation.home.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,11 +49,9 @@ fun HomeBody(
                             .fillMaxHeight(),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        ProfileWidget(modifier = Modifier.weight(1f).fillMaxWidth())
-
+                        ProfileWidget(modifier = Modifier.fillMaxWidth())
                         AppCell(modifier = Modifier.fillMaxWidth())
-
-                        TechStackWidget(modifier = Modifier.weight(1f).fillMaxWidth())
+                        TechStackWidget(modifier = Modifier.fillMaxWidth())
                     }
 
                     Column(
@@ -77,10 +76,10 @@ fun HomeBody(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                ProfileWidget(modifier = Modifier.height(300.dp).fillMaxWidth())
+                ProfileWidget(modifier = Modifier.fillMaxWidth())
                 AppCell(modifier = Modifier.fillMaxWidth())
-                TechStackWidget(modifier = Modifier.height(250.dp).fillMaxWidth())
-                ExperienceWidget(modifier = Modifier.height(400.dp).fillMaxWidth())
+                ExperienceWidget(modifier = Modifier.fillMaxWidth())
+                TechStackWidget(modifier = Modifier.fillMaxWidth())
                 ProjectsWidget(modifier = Modifier.height(200.dp).fillMaxWidth())
             }
         }
