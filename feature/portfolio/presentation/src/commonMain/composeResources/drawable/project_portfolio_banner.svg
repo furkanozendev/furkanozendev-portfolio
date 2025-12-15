@@ -30,12 +30,15 @@
 
     <!-- Floating chips -->
     <rect x="190" y="180" rx="14" ry="14" width="170" height="34" fill="#181824" stroke="#333347" stroke-width="1"/>
-    <text x="205" y="203" fill="#8BE9FD" font-size="14" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <text x="205" y="203" fill="#8BE9FD" font-size="14"
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
         Kotlin · Compose Multiplatform
     </text>
 
-    <rect x="920" y="510" rx="14" ry="14" width="210" height="34" fill="#181824" stroke="#333347" stroke-width="1" opacity="0.9"/>
-    <text x="935" y="533" fill="#BD93F9" font-size="14" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <rect x="920" y="510" rx="14" ry="14" width="210" height="34" fill="#181824" stroke="#333347" stroke-width="1"
+          opacity="0.9"/>
+    <text x="935" y="533" fill="#BD93F9" font-size="14"
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
         Responsive web · Bento layout
     </text>
 

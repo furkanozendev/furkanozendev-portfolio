@@ -1,32 +1,32 @@
 package com.furkanozendev.feature.portfolio.presentation.home.widget
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Book
-import androidx.compose.material.icons.rounded.ChevronLeft
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,202 +36,309 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
-
 
 data class ReadingItem(
     val id: String,
     val title: String,
-    val source: String,      // "Medium", "ProAndroidDev", "Kotlin Blog"
+    val source: String,
     val url: String,
     val tags: List<String> = emptyList()
 )
 
 data class KotlinReadingUiState(
-    val todayItems: List<ReadingItem>,
-    val highlightedIndex: Int = 0
+    val todayItems: List<ReadingItem>
 )
 
 @Composable
 fun WhatImReadingWidget(
     modifier: Modifier = Modifier,
-    uiState: KotlinReadingUiState = KotlinReadingUiState(
-        todayItems = listOf(
-            ReadingItem(
-                id = "1",
-                title = "Understanding Compose Multiplatform: Architecture & Patterns",
-                source = "Medium · Kotlin/Compose",
-                url = "https://medium.com/.../compose-mpp",
-                tags = listOf("Compose", "KMP", "Architecture")
-            ),
-            ReadingItem(
-                id = "2",
-                title = "Kotlin Compiler Plugins: IR basics for real-world projects",
-                source = "Blog · Kotlin",
-                url = "https://...",
-                tags = listOf("Compiler Plugins", "IR", "Tooling")
-            )
-        )
-    ),
-    onItemClick: (ReadingItem) -> Unit = { _ -> },
-    onHighlightChanged: (Int) -> Unit = { _ -> }
+    items: List<ReadingItem> = sampleReadingItems(),
+    initiallyExpanded: Boolean = false,
+    initialVisibleCount: Int = 3
 ) {
-    val textPrimary = Color(0xFFE0E0E0)
-    val textMuted = Color(0xFF9E9E9E)
+    val uriHandler = LocalUriHandler.current
+    var expanded by remember(items) { mutableStateOf(initiallyExpanded) }
+
+    WhatImReadingWidgetContent(
+        modifier = modifier,
+        uiState = KotlinReadingUiState(todayItems = items),
+        expanded = expanded,
+        initialVisibleCount = initialVisibleCount,
+        onToggleExpanded = { expanded = !expanded },
+        onOpen = { uriHandler.openUri(it.url) }
+    )
+}
+
+@Composable
+private fun sampleReadingItems() = listOf(
+    ReadingItem(
+        id = "1",
+        title = "Understanding Compose Multiplatform: Architecture & Patterns",
+        source = "Medium · Kotlin/Compose",
+        url = "https://medium.com/...",
+        tags = listOf("Compose", "KMP", "Architecture")
+    ),
+    ReadingItem(
+        id = "2",
+        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
+        source = "Blog · Kotlin",
+        url = "https://...",
+        tags = listOf("Compiler Plugins", "IR", "Tooling")
+    ),
+    ReadingItem(
+        id = "3",
+        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
+        source = "Blog · Kotlin",
+        url = "https://...",
+        tags = listOf("Compiler Plugins", "IR", "Tooling")
+    ),
+    ReadingItem(
+        id = "4",
+        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
+        source = "Blog · Kotlin",
+        url = "https://...",
+        tags = listOf("Compiler Plugins", "IR", "Tooling")
+    ),
+    ReadingItem(
+        id = "5",
+        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
+        source = "Blog · Kotlin",
+        url = "https://...",
+        tags = listOf("Compiler Plugins", "IR", "Tooling")
+    ),
+    ReadingItem(
+        id = "6",
+        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
+        source = "Blog · Kotlin",
+        url = "https://...",
+        tags = listOf("Compiler Plugins", "IR", "Tooling")
+    ),
+)
+
+@Composable
+fun WhatImReadingWidgetContent(
+    modifier: Modifier = Modifier,
+    uiState: KotlinReadingUiState,
+    expanded: Boolean,
+    initialVisibleCount: Int = 3,
+    onToggleExpanded: () -> Unit,
+    onOpen: (ReadingItem) -> Unit
+) {
+    val textPrimary = Color(0xFFEDEDED)
+    val textMuted = Color(0xFFB0B0B0)
+    val surface = Color.White.copy(alpha = 0.04f)
 
     BentoCard(
         modifier = modifier,
-        title = "Today I'm Reading",
+        title = "Reading list (external)",
         icon = Icons.Rounded.Book
     ) {
-        if (uiState.todayItems.isEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "No articles added yet.",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = textPrimary
-                    )
-                )
-                Text(
-                    text = "You can turn this into a daily Kotlin/engineering reading list.",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = textMuted
-                    )
-                )
-            }
+        val items = uiState.todayItems
+
+        if (items.isEmpty()) {
+            EmptyReadingState(textPrimary, textMuted)
             return@BentoCard
         }
 
-        val uriHandler = LocalUriHandler.current
-        val items = uiState.todayItems
-        val index = uiState.highlightedIndex.coerceIn(0, items.lastIndex)
-        val highlighted = items[index]
+        val safeInitial = initialVisibleCount.coerceIn(1, 6)
+        val visibleCount = if (expanded) items.size else minOf(items.size, safeInitial)
+        val visibleItems = items.take(visibleCount)
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(18.dp)
+                .animateContentSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Highlighted card
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF181824))
-                    .clickable {
-                        onItemClick(highlighted)
-                        uriHandler.openUri(highlighted.url)
-                    }
-                    .padding(14.dp)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Text(
-                        text = highlighted.title,
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            color = textPrimary,
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+            SectionHeader(
+                title = "Reading list (external)",
+                subtitle = "External articles and blog posts I follow to stay current in Kotlin, Compose, and tooling.",
+                textPrimary = textPrimary,
+                textMuted = textMuted
+            )
 
-                    Text(
-                        text = highlighted.source,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            color = textMuted
-                        )
-                    )
-
-                    if (highlighted.tags.isNotEmpty()) {
-                        FlowRow(
-                            modifier = Modifier.padding(top = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            highlighted.tags.forEach { tag ->
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(999.dp))
-                                        .background(Color(0x22FFFFFF))
-                                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                                ) {
-                                    Text(
-                                        text = tag,
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            color = Color(0xFFE0E0E0),
-                                            fontSize = 11.sp
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+            visibleItems.forEach { item ->
+                HighlightedReadingCard(
+                    item = item,
+                    surface = surface,
+                    textPrimary = textPrimary,
+                    textMuted = textMuted,
+                    onOpen = { onOpen(item) }
+                )
             }
 
-            // Slider / pager controls
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Daily Kotlin / dev reading",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        color = textMuted
-                    )
+            val remaining = items.size - visibleCount
+            if (items.size > safeInitial) {
+                ReadingShowMoreRow(
+                    expanded = expanded,
+                    remainingCount = remaining.coerceAtLeast(0),
+                    onToggle = onToggleExpanded,
+                    textMuted = textMuted
                 )
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = {
-                            val newIndex = (index - 1).coerceAtLeast(0)
-                            onHighlightChanged(newIndex)
-                        },
-                        enabled = index > 0
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.ChevronLeft,
-                            contentDescription = "Previous article",
-                            tint = if (index > 0) textPrimary else textMuted
-                        )
-                    }
-
-                    Text(
-                        text = "${index + 1}/${items.size}",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            color = textMuted
-                        )
-                    )
-
-                    IconButton(
-                        onClick = {
-                            val newIndex = (index + 1).coerceAtMost(items.lastIndex)
-                            onHighlightChanged(newIndex)
-                        },
-                        enabled = index < items.lastIndex
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.ChevronRight,
-                            contentDescription = "Next article",
-                            tint = if (index < items.lastIndex) textPrimary else textMuted
-                        )
-                    }
-                }
             }
         }
     }
 }
 
+@Composable
+private fun HighlightedReadingCard(
+    item: ReadingItem,
+    surface: Color,
+    textPrimary: Color,
+    textMuted: Color,
+    onOpen: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(surface)
+            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
+            .clickable(onClick = onOpen)
+            .padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    Modifier
+                        .size(8.dp)
+                        .background(Color(0xFF8BE9FD).copy(alpha = 0.8f), CircleShape)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = item.source,
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        color = textMuted,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
+                    contentDescription = null,
+                    tint = textMuted,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = "External",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = textMuted,
+                        fontWeight = FontWeight.Medium
+                    )
+                )
+            }
+        }
+
+        Text(
+            text = item.title,
+            style = MaterialTheme.typography.titleSmall.copy(
+                color = textPrimary,
+                fontWeight = FontWeight.SemiBold
+            ),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        if (item.tags.isNotEmpty()) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                item.tags.take(4).forEach { tag -> ReadingTag(tag) }
+                if (item.tags.size > 4) ReadingTag("+${item.tags.size - 4}")
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReadingTag(text: String) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(Color.White.copy(alpha = 0.06f))
+            .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(999.dp))
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = Color(0xFFEDEDED)
+            )
+        )
+    }
+}
+
+@Composable
+private fun EmptyReadingState(textPrimary: Color, textMuted: Color) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(18.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "No reading items yet.",
+            style = MaterialTheme.typography.titleSmall.copy(
+                color = textPrimary,
+                fontWeight = FontWeight.SemiBold
+            )
+        )
+        Text(
+            text = "Add 1–3 links you genuinely read. This section works best when it’s real, not filler.",
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = textMuted,
+                lineHeight = 18.sp
+            )
+        )
+    }
+}
+
+@Composable
+private fun ReadingShowMoreRow(
+    expanded: Boolean,
+    remainingCount: Int,
+    onToggle: () -> Unit,
+    textMuted: Color
+) {
+    val label = when {
+        expanded -> "Show less"
+        remainingCount > 0 -> "Show $remainingCount more"
+        else -> "Show more"
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(999.dp))
+                .background(Color.White.copy(alpha = 0.05f))
+                .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(999.dp))
+                .clickable(onClick = onToggle)
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    color = textMuted,
+                    fontWeight = FontWeight.SemiBold
+                )
+            )
+        }
+    }
+}

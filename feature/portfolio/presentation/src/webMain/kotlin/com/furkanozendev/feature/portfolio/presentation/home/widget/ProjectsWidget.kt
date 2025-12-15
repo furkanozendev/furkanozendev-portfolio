@@ -1,13 +1,5 @@
 package com.furkanozendev.feature.portfolio.presentation.home.widget
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,29 +11,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.ChevronLeft
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,20 +29,22 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.project_duelist_banner
 import furkanozendev.feature.portfolio.presentation.generated.resources.project_github_banner
 import furkanozendev.feature.portfolio.presentation.generated.resources.project_portfolio_banner
-import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
-enum class ProjectStatusStyle { Live, InProgress, Neutral }
+enum class ProjectStatusStyle { Live, InProgress, Neutral, Private }
 
 data class ProjectUiModel(
-    val bannerPainter: Painter,
+    val bannerPainter: DrawableResource,
     val title: String,
     val status: String,
     val statusStyle: ProjectStatusStyle,
@@ -75,280 +56,164 @@ data class ProjectUiModel(
     val onSecondaryClick: (() -> Unit)? = null
 )
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ProjectsWidget(
-    modifier: Modifier = Modifier
-) {
+fun ProjectsWidget(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
 
     val portfolioLiveUrl = "https://your-portfolio-url.com"
     val portfolioRepoUrl = "https://github.com/furkanozendev/your-portfolio-repo"
     val githubProfileUrl = "https://github.com/furkanozendev"
 
-    val projects = listOf(
-        ProjectUiModel(
-            bannerPainter = painterResource(Res.drawable.project_portfolio_banner),
-            title = "Portfolio · Compose Multiplatform Web",
-            status = "Live · Personal site",
-            statusStyle = ProjectStatusStyle.Live,
-            description = "Personal portfolio built with Kotlin + Compose Multiplatform for the web, with system-inspired UI, Bento widgets, and responsive layouts.",
-            techStack = listOf(
-                "Kotlin",
-                "Compose Multiplatform",
-                "Compose for Web",
-                "Gradle",
-                "Kotlin Multiplatform"
+    val projects = remember {
+        listOf(
+            ProjectUiModel(
+                bannerPainter = Res.drawable.project_portfolio_banner,
+                title = "Portfolio · Compose Multiplatform",
+                status = "Live",
+                statusStyle = ProjectStatusStyle.Live,
+                description = "Personal portfolio built with Kotlin + Compose Multiplatform (web). Responsive layout, Bento widgets, and a cohesive design system.",
+                techStack = listOf("Kotlin", "Compose Multiplatform", "WASM", "Gradle"),
+                primaryActionLabel = "View live",
+                onPrimaryClick = { uriHandler.openUri(portfolioLiveUrl) },
+                secondaryActionLabel = "View code",
+                onSecondaryClick = { uriHandler.openUri(portfolioRepoUrl) }
             ),
-            primaryActionLabel = "View live",
-            onPrimaryClick = { uriHandler.openUri(portfolioLiveUrl) },
-            secondaryActionLabel = "View code",
-            onSecondaryClick = { uriHandler.openUri(portfolioRepoUrl) }
-        ),
-        ProjectUiModel(
-            bannerPainter = painterResource(Res.drawable.project_duelist_banner),
-            title = "DuelistAI · Card Battler",
-            status = "In development · Private project",
-            statusStyle = ProjectStatusStyle.InProgress,
-            description = "A Kotlin Multiplatform card battler game exploring AI-generated cards, a Ktor/Supabase backend, and Compose-based UI. Currently focused on prototyping game systems and infrastructure — source code is private and not released to stores yet.",
-            techStack = listOf(
-                "Kotlin Multiplatform",
-                "Compose Multiplatform",
-                "Ktor · Supabase",
-                "PostgreSQL",
-                "Clean Architecture",
-                "Pixel-art UI"
+            ProjectUiModel(
+                bannerPainter = Res.drawable.project_duelist_banner,
+                title = "DuelistAI · Card Battler",
+                status = "In progress · Private",
+                statusStyle = ProjectStatusStyle.Private,
+                description = "KMP card battler exploring AI-generated cards, Ktor/Supabase backend, and Compose UI. Currently prototyping game systems and infrastructure.",
+                techStack = listOf("KMP", "Compose", "Ktor", "Supabase", "PostgreSQL", "Clean Architecture", "Pixel UI")
+            ),
+            ProjectUiModel(
+                bannerPainter = Res.drawable.project_github_banner,
+                title = "More on GitHub",
+                status = "Public repositories",
+                statusStyle = ProjectStatusStyle.Neutral,
+                description = "Compiler plugin experiments, Gradle convention plugins, Compose samples, and backend services.",
+                techStack = listOf("Kotlin", "Compiler Plugins", "KSP", "Gradle", "Compose"),
+                primaryActionLabel = "Open GitHub",
+                onPrimaryClick = { uriHandler.openUri(githubProfileUrl) }
             )
-        ),
-        ProjectUiModel(
-            bannerPainter = painterResource(Res.drawable.project_github_banner),
-            title = "More Projects on GitHub",
-            status = "Public repositories",
-            statusStyle = ProjectStatusStyle.Neutral,
-            description = "Includes experiments with Kotlin compiler plugins, Gradle convention plugins, analytics SDKs, Compose samples, and backend services.",
-            techStack = listOf(
-                "Kotlin",
-                "Compiler Plugins / KSP",
-                "Gradle Plugins",
-                "Android · Compose",
-                "Backend APIs"
-            ),
-            primaryActionLabel = "Open GitHub profile",
-            onPrimaryClick = { uriHandler.openUri(githubProfileUrl) }
         )
-    )
-
-    var currentIndex by remember { mutableStateOf(0) }
-    val lastIndex = projects.lastIndex
-
-    // Auto-slide, but restart timer when user changes item
-    LaunchedEffect(currentIndex, projects.size) {
-        delay(8000)
-        currentIndex = (currentIndex + 1) % projects.size
     }
+
+    val textPrimary = Color(0xFFEDEDED)
+    val textMuted = Color(0xFFB0B0B0)
 
     BentoCard(
         modifier = modifier,
         title = "Projects",
         icon = Icons.Rounded.Apps
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Slider row: [ ← ] [ content ] [ → ]
-            BoxWithConstraints(
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val compact = maxWidth < 600.dp
+            val gap = if (compact) 12.dp else 16.dp
+            val padding = if (compact) 18.dp else 22.dp
+            val columns = if (compact) 1 else 2
+
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
+                    .padding(padding),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                val isNarrow = maxWidth < 520.dp
+                SectionHeader(
+                    title = "Selected projects",
+                    subtitle = "Representative work focused on architecture, UI systems, and developer tooling — not a full list.",
+                    textPrimary = textPrimary,
+                    textMuted = textMuted
+                )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    IconButton(
-                        onClick = {
-                            currentIndex =
-                                if (currentIndex == 0) lastIndex else currentIndex - 1
-                        },
-                        modifier = if (isNarrow) {
-                            Modifier.size(32.dp)
-                        } else {
-                            Modifier.size(40.dp)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.ChevronLeft,
-                            contentDescription = "Previous project",
-                            tint = Color(0xFFB0B0B0)
-                        )
-                    }
-
-                    // Animated slide area
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
-                        AnimatedContent(
-                            targetState = currentIndex,
-                            transitionSpec = {
-                                val direction = if (targetState > initialState) 1 else -1
-                                (slideInHorizontally(
-                                    animationSpec = tween(durationMillis = 400)
-                                ) { fullWidth -> direction * fullWidth } +
-                                        fadeIn(animationSpec = tween(400))).togetherWith(
-                                    slideOutHorizontally(
-                                        animationSpec = tween(durationMillis = 400)
-                                    ) { fullWidth -> -direction * fullWidth } +
-                                            fadeOut(animationSpec = tween(400))
-                                )
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) { index ->
-                            val project = projects[index]
-                            ProjectCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                bannerPainter = project.bannerPainter,
-                                title = project.title,
-                                status = project.status,
-                                statusStyle = project.statusStyle,
-                                description = project.description,
-                                techStack = project.techStack,
-                                primaryActionLabel = project.primaryActionLabel,
-                                onPrimaryClick = project.onPrimaryClick,
-                                secondaryActionLabel = project.secondaryActionLabel,
-                                onSecondaryClick = project.onSecondaryClick
-                            )
-                        }
-                    }
-
-                    IconButton(
-                        onClick = {
-                            currentIndex =
-                                if (currentIndex == lastIndex) 0 else currentIndex + 1
-                        },
-                        modifier = if (isNarrow) {
-                            Modifier.size(32.dp)
-                        } else {
-                            Modifier.size(40.dp)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.ChevronRight,
-                            contentDescription = "Next project",
-                            tint = Color(0xFFB0B0B0)
-                        )
-                    }
-                }
+                ProjectsGrid(
+                    projects = projects,
+                    columns = columns,
+                    gap = gap
+                )
             }
+        }
+    }
+}
 
-            // Dots indicator
+@Composable
+private fun ProjectsGrid(
+    projects: List<ProjectUiModel>,
+    columns: Int,
+    gap: Dp
+) {
+    val rows = remember(projects, columns) { projects.chunked(columns) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(gap)) {
+        rows.forEach { rowItems ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(gap)
             ) {
-                projects.forEachIndexed { index, _ ->
-                    val selected = index == currentIndex
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .size(if (selected) 10.dp else 6.dp)
-                            .clip(CircleShape)
-                            .background(
-                                if (selected) Color(0xFF8BE9FD) else Color(0xFF3A3A45)
-                            )
-                            .clickable { currentIndex = index }
+                rowItems.forEach { project ->
+                    ProjectCardGrid(
+                        project = project,
+                        modifier = Modifier.weight(1f)
                     )
+                }
+                // Fill remaining columns so widths stay equal
+                repeat(columns - rowItems.size) {
+                    Spacer(Modifier.weight(1f))
                 }
             }
         }
     }
 }
 
-
 @Composable
-private fun ProjectCard(
-    modifier: Modifier = Modifier,
-    bannerPainter: Painter,
-    title: String,
-    status: String,
-    statusStyle: ProjectStatusStyle,
-    description: String,
-    techStack: List<String>,
-    primaryActionLabel: String?,
-    onPrimaryClick: (() -> Unit)?,
-    secondaryActionLabel: String?,
-    onSecondaryClick: (() -> Unit)?
+private fun ProjectCardGrid(
+    project: ProjectUiModel,
+    modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(
+    Column(
         modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White.copy(alpha = 0.04f))
+            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
+            .padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        val isWideLayout = maxWidth > 800.dp
+        ProjectBanner(
+            bannerPainter = painterResource(project.bannerPainter),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(140.dp)
+        )
 
-        // Compact banner heights so content always has room
-        val bannerHeightWide = 120.dp     // desktop
-        val bannerHeightNarrow = 160.dp   // mobile / tablet
-
-        if (isWideLayout) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ProjectBanner(
-                    bannerPainter = bannerPainter,
-                    modifier = Modifier
-                        .weight(0.4f)
-                        .height(bannerHeightWide)
-                )
-
-                ProjectContent(
-                    title = title,
-                    status = status,
-                    statusStyle = statusStyle,
-                    description = description,
-                    techStack = techStack,
-                    primaryActionLabel = primaryActionLabel,
-                    onPrimaryClick = onPrimaryClick,
-                    secondaryActionLabel = secondaryActionLabel,
-                    onSecondaryClick = onSecondaryClick,
-                    modifier = Modifier.weight(0.6f)
-                )
-            }
-        } else {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ProjectBanner(
-                    bannerPainter = bannerPainter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(bannerHeightNarrow)
-                )
-
-                ProjectContent(
-                    title = title,
-                    status = status,
-                    statusStyle = statusStyle,
-                    description = description,
-                    techStack = techStack,
-                    primaryActionLabel = primaryActionLabel,
-                    onPrimaryClick = onPrimaryClick,
-                    secondaryActionLabel = secondaryActionLabel,
-                    onSecondaryClick = onSecondaryClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Text(
+                text = project.title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold
+                ),
+                modifier = Modifier.weight(1f)
+            )
         }
+
+        ProjectStatusPill(project.status, project.statusStyle)
+
+        Text(
+            text = project.description,
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = Color(0xFFD8D8D8),
+                lineHeight = 18.sp
+            ),
+            maxLines = 4
+        )
+
+        ProjectTechRow(project.techStack)
+
+        ProjectActionsRow(project)
     }
 }
 
@@ -360,111 +225,43 @@ private fun ProjectBanner(
     Image(
         painter = bannerPainter,
         contentDescription = null,
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .fillMaxSize(),           // width + height come from caller
+        modifier = modifier.clip(RoundedCornerShape(12.dp)),
         contentScale = ContentScale.Crop
     )
 }
 
-
 @Composable
-private fun ProjectContent(
-    title: String,
-    status: String,
-    statusStyle: ProjectStatusStyle,
-    description: String,
-    techStack: List<String>,
-    primaryActionLabel: String?,
-    onPrimaryClick: (() -> Unit)?,
-    secondaryActionLabel: String?,
-    onSecondaryClick: (() -> Unit)?,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+private fun ProjectTechRow(techStack: List<String>) {
+    val visible = techStack.take(5)
+    val remaining = techStack.size - visible.size
+
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold
-                )
-            )
-        }
-
-        ProjectStatusPill(
-            text = status,
-            style = statusStyle
-        )
-
-        Text(
-            text = description,
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = Color(0xFFDDDDDD),
-                lineHeight = 18.sp
-            )
-        )
-
-        FlowRow(
-            modifier = Modifier.padding(top = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            techStack.forEach { tech ->
-                ProjectTechChip(text = tech)
-            }
-        }
-
-        if (primaryActionLabel != null && onPrimaryClick != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ProjectButton(
-                    label = primaryActionLabel,
-                    filled = true,
-                    onClick = onPrimaryClick
-                )
-
-                if (secondaryActionLabel != null && onSecondaryClick != null) {
-                    ProjectButton(
-                        label = secondaryActionLabel,
-                        filled = false,
-                        onClick = onSecondaryClick
-                    )
-                }
-            }
+        visible.forEach { ProjectTechChip(it) }
+        if (remaining > 0) {
+            ProjectTechChip("+$remaining more", muted = true)
         }
     }
 }
 
 @Composable
-private fun ProjectStatusPill(
-    text: String,
-    style: ProjectStatusStyle
-) {
-    val (bg, fg) = when (style) {
-        ProjectStatusStyle.Live -> Color(0x3327AE60) to Color(0xFF2ECC71)
-        ProjectStatusStyle.InProgress -> Color(0x33F1C40F) to Color(0xFFF1C40F)
-        ProjectStatusStyle.Neutral -> Color(0x33444444) to Color(0xFFDDDDDD)
-    }
+private fun ProjectTechChip(text: String, muted: Boolean = false) {
+    val bg = if (muted) Color.White.copy(alpha = 0.04f) else Color.White.copy(alpha = 0.06f)
+    val border = Color.White.copy(alpha = 0.10f)
+    val fg = if (muted) Color(0xFFB0B0B0) else Color(0xFFEDEDED)
 
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
             .background(bg)
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+            .border(1.dp, border, RoundedCornerShape(999.dp))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelSmall.copy(
+            style = MaterialTheme.typography.labelMedium.copy(
                 color = fg,
                 fontWeight = FontWeight.Medium
             )
@@ -473,26 +270,49 @@ private fun ProjectStatusPill(
 }
 
 @Composable
-private fun ProjectTechChip(text: String) {
+private fun ProjectStatusPill(text: String, style: ProjectStatusStyle) {
+    val (bg, fg) = when (style) {
+        ProjectStatusStyle.Live -> Color(0x3327AE60) to Color(0xFF2ECC71)
+        ProjectStatusStyle.InProgress -> Color(0x33F1C40F) to Color(0xFFF1C40F)
+        ProjectStatusStyle.Private -> Color(0x334E5DFF) to Color(0xFF8BE9FD) // cyan/blue
+        ProjectStatusStyle.Neutral -> Color(0x33444444) to Color(0xFFDDDDDD)
+    }
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
-            .background(Color(0x22FFFFFF))
-            .border(
-                width = 1.dp,
-                color = Color(0x33FFFFFF),
-                shape = RoundedCornerShape(999.dp)
-            )
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+            .background(bg)
+            .padding(horizontal = 10.dp, vertical = 5.dp)
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelMedium.copy(
-                color = Color(0xFFE0E0E0),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = fg,
+                fontWeight = FontWeight.SemiBold
             )
         )
+    }
+}
+
+@Composable
+private fun ProjectActionsRow(project: ProjectUiModel) {
+    val hasPrimary = project.primaryActionLabel != null && project.onPrimaryClick != null
+    if (!hasPrimary) return
+
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ProjectButton(
+            label = project.primaryActionLabel,
+            filled = true,
+            onClick = project.onPrimaryClick
+        )
+
+        if (project.secondaryActionLabel != null && project.onSecondaryClick != null) {
+            ProjectButton(
+                label = project.secondaryActionLabel,
+                filled = false,
+                onClick = project.onSecondaryClick
+            )
+        }
     }
 }
 

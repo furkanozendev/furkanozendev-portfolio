@@ -135,7 +135,7 @@ fun Modifier.smartMouseWheelTrigger(
 
                     val pixels = delta.y * -50f
 
-                   if (shadeState.progress > 0f || (pixels > 0 && scrollState.value == 0)) {
+                    if (shadeState.progress > 0f || (pixels > 0 && scrollState.value == 0)) {
                         shadeState.updatePull(pixels, isFling = false)
                     }
                 }

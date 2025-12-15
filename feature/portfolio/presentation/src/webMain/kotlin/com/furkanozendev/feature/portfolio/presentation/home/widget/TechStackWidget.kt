@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,232 +19,159 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 
+@Immutable
+private data class TechCategoryUi(
+    val title: String,
+    val subtitle: String,
+    val emphasis: Emphasis,
+    val items: List<String>
+)
+
+private enum class Emphasis { Primary, Secondary }
+
+private val techCategories = listOf(
+    TechCategoryUi(
+        title = "Android",
+        subtitle = "Shipped production features & UI systems",
+        emphasis = Emphasis.Primary,
+        items = listOf(
+            "Kotlin", "Jetpack Compose", "Coroutines", "Flow",
+            "Clean Architecture", "MVVM", "Hilt", "Testing (JUnit/MockK)"
+        )
+    ),
+    TechCategoryUi(
+        title = "Multiplatform",
+        subtitle = "Cross-platform UI & shared logic",
+        emphasis = Emphasis.Secondary,
+        items = listOf(
+            "Compose Multiplatform", "Kotlin Multiplatform", "Koin", "iOS targets"
+        )
+    ),
+    TechCategoryUi(
+        title = "Backend",
+        subtitle = "APIs that support products",
+        emphasis = Emphasis.Secondary,
+        items = listOf(
+            "Ktor", "REST", "WebSockets", "PostgreSQL", "Supabase"
+        )
+    ),
+    TechCategoryUi(
+        title = "Tooling",
+        subtitle = "DX, build systems, and metaprogramming",
+        emphasis = Emphasis.Secondary,
+        items = listOf(
+            "Compiler Plugins (IR)", "KSP", "Gradle Convention Plugins", "Analytics SDKs"
+        )
+    )
+)
+
 @Composable
-fun TechStackWidget(
-    modifier: Modifier = Modifier
+private fun ResponsiveColumns(
+    modifier: Modifier = Modifier,
+    columns: Int,
+    gap: Dp,
+    content: @Composable (columnIndex: Int) -> Unit
 ) {
-    val accent1 = Color(0xFFBD93F9)
-    val accent2 = Color(0xFF8BE9FD)
-    val textPrimary = Color(0xFFE0E0E0)
-    val textMuted = Color(0xFF9E9E9E)
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(gap)
+    ) {
+        repeat(columns) { i ->
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(gap)
+            ) { content(i) }
+        }
+    }
+}
+
+@Composable
+fun TechStackWidget(modifier: Modifier = Modifier) {
+    val accentPrimary = Color(0xFF8BE9FD)   // cyan
+    val accentSecondary = Color(0xFFBD93F9) // purple
+    val textPrimary = Color(0xFFEDEDED)
+    val textMuted = Color(0xFFB0B0B0)
 
     BentoCard(
         modifier = modifier,
         title = "Tech Stack",
         icon = Icons.Rounded.Code
     ) {
-        BoxWithConstraints(
-            modifier = Modifier
-                .padding(24.dp)
-        ) {
-            val isWide = maxWidth > 700.dp
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val isCompact = maxWidth < 520.dp
+            val isWide = maxWidth >= 900.dp
+
+            val padding = when {
+                isWide -> 28.dp
+                isCompact -> 18.dp
+                else -> 22.dp
+            }
+            val gap = if (isCompact) 14.dp else 16.dp
+            val cols = if (isWide) 2 else 1
+
+            val (primary, secondary) = techCategories.partition { it.emphasis == Emphasis.Primary }
 
             Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(padding),
+                verticalArrangement = Arrangement.spacedBy(gap)
             ) {
-                // Header / tagline
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = if (isWide) Arrangement.SpaceBetween else Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "End-to-end Kotlin-focused builder",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            color = textPrimary,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    )
+                SectionHeader(
+                    title = "Kotlin-first engineer building product UI, architecture, and tooling.",
+                    subtitle = "Strongest in Android + Compose; experienced with KMP, backend support, and developer tooling.",
+                    textPrimary = textPrimary,
+                    textMuted = textMuted
+                )
 
-                    if (isWide) {
-                        TechHighlightPill(
-                            text = "Android · KMP · Backend · Tooling",
-                            accent1 = accent1,
-                            accent2 = accent2
+                Text(
+                    text = "Primary",
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        color = textMuted,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
+
+                ResponsiveColumns(columns = cols, gap = gap) { col ->
+                    val items = primary.chunked((primary.size + cols - 1) / cols).getOrNull(col).orEmpty()
+                    items.forEach { cat ->
+                        TechCategoryCard(
+                            category = cat,
+                            accent = accentPrimary,
+                            textPrimary = textPrimary,
+                            textMuted = textMuted
                         )
                     }
                 }
 
-                if (!isWide) {
-                    TechHighlightPill(
-                        text = "Android · KMP · Backend · Tooling",
-                        accent1 = accent1,
-                        accent2 = accent2
+                Text(
+                    text = "Secondary",
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        color = textMuted,
+                        fontWeight = FontWeight.SemiBold
                     )
-                }
+                )
 
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Content layout
-                if (isWide) {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.spacedBy(24.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            TechCategory(
-                                title = "Core",
-                                subtitle = "Languages & foundations",
-                                items = listOf(
-                                    "Kotlin",
-                                    "SQL · PostgreSQL",
-                                    "Coroutines · Flow"
-                                ),
-                                textPrimary = textPrimary,
-                                textMuted = textMuted,
-                                accent = accent1
-                            )
-
-                            TechCategory(
-                                title = "Android & KMP",
-                                subtitle = "Apps, UI and architecture",
-                                items = listOf(
-                                    "Jetpack Compose",
-                                    "Compose Multiplatform",
-                                    "Kotlin Multiplatform",
-                                    "Clean Architecture · MVVM",
-                                    "Hilt · Koin",
-                                    "Unidirectional data flow"
-                                ),
-                                textPrimary = textPrimary,
-                                textMuted = textMuted,
-                                accent = accent2
-                            )
-                        }
-
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            TechCategory(
-                                title = "Backend & Infra",
-                                subtitle = "APIs and supporting services",
-                                items = listOf(
-                                    "Ktor",
-                                    "Supabase · Postgres",
-                                    "REST · WebSocket APIs"
-                                ),
-                                textPrimary = textPrimary,
-                                textMuted = textMuted,
-                                accent = accent1
-                            )
-
-                            TechCategory(
-                                title = "Tooling",
-                                subtitle = "Developer experience",
-                                items = listOf(
-                                    "Kotlin compiler plugins (IR)",
-                                    "KSP · Annotation processing",
-                                    "Gradle convention plugins",
-                                    "Analytics SDKs"
-                                ),
-                                textPrimary = textPrimary,
-                                textMuted = textMuted,
-                                accent = accent2
-                            )
-
-                            TechCategory(
-                                title = "Platforms & Tools",
-                                subtitle = "Daily drivers",
-                                items = listOf(
-                                    "Android Studio · IntelliJ",
-                                    "Xcode · iOS targets",
-                                    "Git · GitHub",
-                                    "Docker · CI/CD (GitHub Actions)"
-                                ),
-                                textPrimary = textPrimary,
-                                textMuted = textMuted,
-                                accent = accent1
-                            )
-                        }
-                    }
-                } else {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        TechCategory(
-                            title = "Core",
-                            subtitle = "Languages & foundations",
-                            items = listOf(
-                                "Kotlin",
-                                "SQL · PostgreSQL",
-                                "Coroutines · Flow"
-                            ),
+                ResponsiveColumns(columns = cols, gap = gap) { col ->
+                    val items = secondary.chunked((secondary.size + cols - 1) / cols).getOrNull(col).orEmpty()
+                    items.forEach { cat ->
+                        TechCategoryCard(
+                            category = cat,
+                            accent = accentSecondary,
                             textPrimary = textPrimary,
-                            textMuted = textMuted,
-                            accent = accent1
-                        )
-
-                        TechCategory(
-                            title = "Android & KMP",
-                            subtitle = "Apps, UI and architecture",
-                            items = listOf(
-                                "Jetpack Compose",
-                                "Compose Multiplatform",
-                                "Kotlin Multiplatform",
-                                "Clean Architecture · MVVM",
-                                "Hilt · Koin",
-                                "Unidirectional data flow"
-                            ),
-                            textPrimary = textPrimary,
-                            textMuted = textMuted,
-                            accent = accent2
-                        )
-
-                        TechCategory(
-                            title = "Backend & Infra",
-                            subtitle = "APIs and supporting services",
-                            items = listOf(
-                                "Ktor",
-                                "Supabase · Postgres",
-                                "REST · WebSocket APIs"
-                            ),
-                            textPrimary = textPrimary,
-                            textMuted = textMuted,
-                            accent = accent1
-                        )
-
-                        TechCategory(
-                            title = "Tooling",
-                            subtitle = "Developer experience",
-                            items = listOf(
-                                "Kotlin compiler plugins (IR)",
-                                "KSP · Annotation processing",
-                                "Gradle convention plugins",
-                                "Analytics SDKs"
-                            ),
-                            textPrimary = textPrimary,
-                            textMuted = textMuted,
-                            accent = accent2
-                        )
-
-                        TechCategory(
-                            title = "Platforms & Tools",
-                            subtitle = "Daily drivers",
-                            items = listOf(
-                                "Android Studio · IntelliJ",
-                                "Xcode · iOS targets",
-                                "Git · GitHub",
-                                "Docker · CI/CD (GitHub Actions)"
-                            ),
-                            textPrimary = textPrimary,
-                            textMuted = textMuted,
-                            accent = accent1
+                            textMuted = textMuted
                         )
                     }
                 }
@@ -255,53 +181,52 @@ fun TechStackWidget(
 }
 
 @Composable
-private fun TechCategory(
-    title: String,
-    subtitle: String,
-    items: List<String>,
+private fun TechCategoryCard(
+    category: TechCategoryUi,
+    accent: Color,
     textPrimary: Color,
-    textMuted: Color,
-    accent: Color
+    textMuted: Color
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White.copy(alpha = 0.04f))
+            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
+            .padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
-                modifier = Modifier
+                Modifier
                     .width(3.dp)
-                    .height(20.dp)
-                    .background(accent)
+                    .height(18.dp)
+                    .background(accent, RoundedCornerShape(2.dp))
             )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
+            Spacer(Modifier.width(10.dp))
             Column {
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.labelLarge.copy(
+                    text = category.title,
+                    style = MaterialTheme.typography.titleSmall.copy(
                         color = textPrimary,
                         fontWeight = FontWeight.SemiBold
                     )
                 )
                 Text(
-                    text = subtitle,
+                    text = category.subtitle,
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = textMuted
+                        color = textMuted,
+                        lineHeight = 18.sp
                     )
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
-
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items.forEach { item ->
+            category.items.take(10).forEach { item ->
                 TechTagChip(text = item)
             }
         }
@@ -313,49 +238,15 @@ private fun TechTagChip(text: String) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
-            .background(Color(0x22FFFFFF))
-            .border(
-                width = 1.dp,
-                color = Color(0x33FFFFFF),
-                shape = RoundedCornerShape(999.dp)
-            )
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+            .background(Color.White.copy(alpha = 0.06f))
+            .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(999.dp))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium.copy(
-                color = Color(0xFFE0E0E0),
-                fontSize = 12.sp,
+                color = Color(0xFFEDEDED),
                 fontWeight = FontWeight.Medium
-            )
-        )
-    }
-}
-
-@Composable
-private fun TechHighlightPill(
-    text: String,
-    accent1: Color,
-    accent2: Color
-) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(
-                brush = Brush.horizontalGradient(
-                    listOf(
-                        accent1.copy(alpha = 0.35f),
-                        accent2.copy(alpha = 0.35f)
-                    )
-                )
-            )
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium.copy(
-                color = Color(0xFFF5F5F5),
-                fontWeight = FontWeight.SemiBold
             )
         )
     }

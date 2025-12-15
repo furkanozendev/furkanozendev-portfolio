@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class BootViewModel: ViewModel() {
+internal class BootViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(BootUiState())
     val uiState: StateFlow<BootUiState> = _uiState.asStateFlow()

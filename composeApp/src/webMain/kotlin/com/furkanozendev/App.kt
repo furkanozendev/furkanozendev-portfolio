@@ -2,6 +2,7 @@ package com.furkanozendev
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import com.furkanozendev.core.designsystem.font.AppTypography
 import com.furkanozendev.feature.boot.di.bootPresentationModule
 import com.furkanozendev.feature.portfolio.presentation.home.HomeScreen
 import com.furkanozendev.feature.portfolio.presentation.home.di.portfolioPresentationModule
@@ -20,7 +21,9 @@ fun App() {
             modules(portfolioPresentationModule)
         }
     ) {
-        MaterialTheme {
+        MaterialTheme(
+            typography = AppTypography()
+        ) {
             HomeScreen()
         }
     }

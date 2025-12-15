@@ -4,6 +4,10 @@ plugins {
 
 kotlin {
     sourceSets {
+        commonMain.dependencies {
+            implementation(compose.components.resources)
+        }
+
         webMain.dependencies {
             implementation(compose.materialIconsExtended)
 
