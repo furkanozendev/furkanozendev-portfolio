@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -62,6 +64,7 @@ fun ProjectsWidget(modifier: Modifier = Modifier) {
 
     val portfolioLiveUrl = "https://your-portfolio-url.com"
     val portfolioRepoUrl = "https://github.com/furkanozendev/your-portfolio-repo"
+    val nexKmpRepoUrl = "https://github.com/furkanozendev/nexkmp"
     val githubProfileUrl = "https://github.com/furkanozendev"
 
     val projects = remember {
@@ -85,6 +88,23 @@ fun ProjectsWidget(modifier: Modifier = Modifier) {
                 statusStyle = ProjectStatusStyle.Private,
                 description = "KMP card battler exploring AI-generated cards, Ktor/Supabase backend, and Compose UI. Currently prototyping game systems and infrastructure.",
                 techStack = listOf("KMP", "Compose", "Ktor", "Supabase", "PostgreSQL", "Clean Architecture", "Pixel UI")
+            ),
+            ProjectUiModel(
+                bannerPainter = Res.drawable.project_github_banner,
+                title = "NexKMP · KMP Architecture & Compiler Showcase",
+                status = "Public · Reference Project",
+                statusStyle = ProjectStatusStyle.Neutral,
+                description = "A production-grade Kotlin Multiplatform reference project showcasing modular architecture, Gradle build-logic conventions, and a custom IR-based compiler plugin. Designed as a learning and demonstration ground rather than a generic starter template.",
+                techStack = listOf(
+                    "Kotlin Multiplatform",
+                    "Compose Multiplatform",
+                    "IR Compiler Plugin",
+                    "Gradle Build Logic",
+                    "Convention Plugins",
+                    "Clean Architecture"
+                ),
+                primaryActionLabel = "View code",
+                onPrimaryClick = { uriHandler.openUri(nexKmpRepoUrl) }
             ),
             ProjectUiModel(
                 bannerPainter = Res.drawable.project_github_banner,
@@ -147,16 +167,17 @@ private fun ProjectsGrid(
     Column(verticalArrangement = Arrangement.spacedBy(gap)) {
         rows.forEach { rowItems ->
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.spacedBy(gap)
             ) {
                 rowItems.forEach { project ->
                     ProjectCardGrid(
                         project = project,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).fillMaxHeight()
                     )
                 }
-                // Fill remaining columns so widths stay equal
                 repeat(columns - rowItems.size) {
                     Spacer(Modifier.weight(1f))
                 }

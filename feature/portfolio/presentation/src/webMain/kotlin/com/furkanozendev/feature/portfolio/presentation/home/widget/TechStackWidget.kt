@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.furkanozendev.core.designsystem.components.SectionHeader
@@ -56,15 +55,7 @@ private val techCategories = listOf(
         subtitle = "Cross-platform UI & shared logic",
         emphasis = Emphasis.Secondary,
         items = listOf(
-            "Compose Multiplatform", "Kotlin Multiplatform", "Koin", "iOS targets"
-        )
-    ),
-    TechCategoryUi(
-        title = "Backend",
-        subtitle = "APIs that support products",
-        emphasis = Emphasis.Secondary,
-        items = listOf(
-            "Ktor", "REST", "WebSockets", "PostgreSQL", "Supabase"
+            "Compose Multiplatform", "Kotlin Multiplatform", "Koin", "iOS targets", "Ktor"
         )
     ),
     TechCategoryUi(
@@ -78,29 +69,9 @@ private val techCategories = listOf(
 )
 
 @Composable
-private fun ResponsiveColumns(
-    modifier: Modifier = Modifier,
-    columns: Int,
-    gap: Dp,
-    content: @Composable (columnIndex: Int) -> Unit
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(gap)
-    ) {
-        repeat(columns) { i ->
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(gap)
-            ) { content(i) }
-        }
-    }
-}
-
-@Composable
 fun TechStackWidget(modifier: Modifier = Modifier) {
-    val accentPrimary = Color(0xFF8BE9FD)   // cyan
-    val accentSecondary = Color(0xFFBD93F9) // purple
+    val accentPrimary = Color(0xFF8BE9FD)
+    val accentSecondary = Color(0xFFBD93F9)
     val textPrimary = Color(0xFFEDEDED)
     val textMuted = Color(0xFFB0B0B0)
 
@@ -109,7 +80,7 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
         title = "Tech Stack",
         icon = Icons.Rounded.Code
     ) {
-        BoxWithConstraints(Modifier.fillMaxWidth()) {
+        BoxWithConstraints(Modifier) {
             val isCompact = maxWidth < 520.dp
             val isWide = maxWidth >= 900.dp
 
@@ -119,7 +90,6 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
                 else -> 22.dp
             }
             val gap = if (isCompact) 14.dp else 16.dp
-            val cols = if (isWide) 2 else 1
 
             val (primary, secondary) = techCategories.partition { it.emphasis == Emphasis.Primary }
 
@@ -144,17 +114,12 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
                     )
                 )
 
-                ResponsiveColumns(columns = cols, gap = gap) { col ->
-                    val items = primary.chunked((primary.size + cols - 1) / cols).getOrNull(col).orEmpty()
-                    items.forEach { cat ->
-                        TechCategoryCard(
-                            category = cat,
-                            accent = accentPrimary,
-                            textPrimary = textPrimary,
-                            textMuted = textMuted
-                        )
-                    }
-                }
+                TechCategoryCard(
+                    category = primary.first(),
+                    accent = accentPrimary,
+                    textPrimary = textPrimary,
+                    textMuted = textMuted
+                )
 
                 Text(
                     text = "Secondary",
@@ -164,9 +129,10 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
                     )
                 )
 
-                ResponsiveColumns(columns = cols, gap = gap) { col ->
-                    val items = secondary.chunked((secondary.size + cols - 1) / cols).getOrNull(col).orEmpty()
-                    items.forEach { cat ->
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(gap)
+                ) {
+                    secondary.forEach { cat ->
                         TechCategoryCard(
                             category = cat,
                             accent = accentSecondary,

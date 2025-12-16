@@ -1,16 +1,17 @@
 package com.furkanozendev.feature.portfolio.presentation.home.widget
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,16 +26,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,53 +47,45 @@ import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.papara_logo
+import kotlinx.atomicfu.TraceBase.None.append
 import org.jetbrains.compose.resources.painterResource
 
 @Immutable
 data class ExperienceSection(
     val heading: String,
-    val bullets: List<String>
+    val highlight: String?,
+    val bullets: List<String> = emptyList()
 )
+
 
 private val androidDevSections = listOf(
     ExperienceSection(
         heading = "Product Engineering",
-        bullets = listOf(
-            "Worked across Cards, Cashback, Onboarding, and Investments—delivering user-facing features and improving performance and reliability.",
-            "Collaborated closely with product, backend, and design teams."
-        )
+        highlight = "Owned critical user flows (*Card*, *Investment*, *Onboarding*) with focus on high-performance UI."
     ),
     ExperienceSection(
         heading = "Accessibility & Innovation",
-        bullets = listOf(
-            "Developed VoiceCard using Bluetooth + Text-to-Speech to assist visually impaired users during card transactions.",
-            "Built SketchMyCard, a custom Android Canvas drawing/editor to design personalized physical cards."
-        )
+        highlight = "Architected 'SketchMyCard' (*Canvas engine*) and 'VoiceCard' (*Bluetooth/TTS*) for accessibility."
     ),
     ExperienceSection(
-        heading = "Architecture & Platform Modernization",
-        bullets = listOf(
-            "Contributed to migration to Jetpack Compose by building reusable UI components and setting modern patterns.",
-            "Participated in modularization, Clean Architecture adoption, and refactoring across key product areas."
-        )
+        heading = "Architecture & Platform",
+        highlight = "Led migration to *Jetpack Compose*, establishing a reusable *Design System* and modular boundaries."
     ),
     ExperienceSection(
         heading = "Testing & Tooling",
-        bullets = listOf(
-            "Improved reliability with unit tests (JUnit, MockK) and automated E2E flows using Maestro.",
-            "Supported code reviews, internal tooling enhancements, and engineering best practices."
-        )
+        highlight = "Elevated quality via *Maestro E2E*, unit testing culture, and internal *CLI tooling*."
     )
 )
 
-private val internSections = listOf(
-    ExperienceSection(
-        heading = "Internship",
-        bullets = listOf(
-            "Contributed improvements to onboarding/KYC flows and assisted architectural migrations.",
-            "Demonstrated rapid growth and transitioned into full-time engineering within months."
-        )
-    )
+private val androidDevKeyWins = listOf(
+    "Sole owner of accessibility-driven features used in production card flows.",
+    "Designed Compose-based UI foundations reused across multiple product areas.",
+    "Improved long-term maintainability by enforcing modularization and architectural consistency during platform migration."
+)
+
+private val internSections = ExperienceSection(
+    heading = "Internship",
+    highlight = "Contributed to onboarding/KYC improvements and assisted early-stage architectural migrations."
 )
 
 @Immutable
@@ -113,7 +110,7 @@ private fun rememberExperienceSpec(maxWidth: Dp): ExperienceSpec {
             },
             itemGap = if (compact) 14.dp else 18.dp,
             maxTextWidth = if (wide) 780.dp else Dp.Infinity,
-            showTimeline = !compact // timeline looks cramped on mobile widths
+            showTimeline = !compact
         )
     }
 }
@@ -152,15 +149,16 @@ fun ExperienceWidget(modifier: Modifier = Modifier) {
                     date = "Apr 2022 — Dec 2025",
                     subtitle = "Contributed to major product areas and helped modernize the engineering foundation of one of Turkey’s largest fintech mobile apps.",
                     sections = androidDevSections,
+                    keyWins = androidDevKeyWins,
                     spec = spec,
                     showTimeline = spec.showTimeline,
                     isLast = false
                 )
 
-                ExperienceRoleItem(
+                ExperienceInternItem(
                     title = "Android Developer Intern",
                     date = "Feb 2022 — Apr 2022",
-                    sections = internSections,
+                    section = internSections,
                     spec = spec,
                     showTimeline = spec.showTimeline,
                     isLast = true
@@ -209,19 +207,124 @@ private fun ExperienceRoleItem(
     date: String,
     subtitle: String? = null,
     sections: List<ExperienceSection>,
+    keyWins: List<String>,
     spec: ExperienceSpec,
     showTimeline: Boolean,
     isLast: Boolean
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    val compact = spec.maxTextWidth == Dp.Infinity
 
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        if (showTimeline) TimelineRail(isLast = isLast)
+
+        Column(
+            modifier = Modifier
+                .widthIn(max = spec.maxTextWidth)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            RoleHeader(title = title, date = date, subtitle = subtitle)
+
+            FocusAreasGrid(
+                sections = sections,
+                compact = compact
+            )
+
+            KeyWinsBlock(
+                bullets = keyWins,
+                compact = compact
+            )
+        }
+    }
+}
+
+@Composable
+private fun KeyWinsBlock(
+    bullets: List<String>,
+    compact: Boolean
+) {
+    if (bullets.isEmpty()) return
+
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(
+            text = "Engineering impact",
+            style = MaterialTheme.typography.labelMedium.copy(
+                color = Color(0xFFB0B0B0),
+                fontWeight = FontWeight.SemiBold
+            )
+        )
+
+        bullets.take(if (compact) 2 else 3).forEach { bullet ->
+            BulletText(bullet)
+        }
+    }
+}
+
+@Composable
+private fun FocusPill(
+    heading: String,
+    highlight: String,
+    modifier: Modifier = Modifier
+) {
+    val accentColor = Color(0xFF8BE9FD)
+
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFF1E1E1E))
+            .border(
+                width = 1.dp,
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.1f),
+                        Color.White.copy(alpha = 0.02f)
+                    )
+                ),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = heading.uppercase(),
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = accentColor.copy(alpha = 0.9f),
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
+        )
+
+        Text(
+            text = highlightKeywords(highlight, highlightColor = Color(0xFFE0E0E0)),
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = Color(0xFFAAAAAA),
+                lineHeight = 16.sp
+            ),
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun ExperienceInternItem(
+    title: String,
+    date: String,
+    section: ExperienceSection,
+    spec: ExperienceSpec,
+    showTimeline: Boolean,
+    isLast: Boolean
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        if (showTimeline) {
-            TimelineRail(isLast = isLast)
-        }
+        if (showTimeline) TimelineRail(isLast = isLast)
 
         Column(
             modifier = Modifier
@@ -229,38 +332,72 @@ private fun ExperienceRoleItem(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White
-                )
+            RoleHeader(title = title, date = date, subtitle = section.highlight)
+        }
+    }
+}
+
+@Composable
+private fun RoleHeader(
+    title: String,
+    date: String,
+    subtitle: String?
+) {
+    Text(
+        title,
+        style = MaterialTheme.typography.titleMedium.copy(
+            fontWeight = FontWeight.Medium,
+            color = Color.White
+        )
+    )
+    Text(
+        date,
+        style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFB0B0B0))
+    )
+
+    if (!subtitle.isNullOrBlank()) {
+        Text(
+            subtitle,
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = Color(0xFFD8D8D8),
+                lineHeight = 18.sp
             )
-            Text(
-                date,
-                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFB0B0B0))
+        )
+    }
+}
+
+@Composable
+private fun FocusAreasGrid(
+    sections: List<ExperienceSection>,
+    compact: Boolean
+) {
+    val cols = if (compact) 1 else 2
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "KEY FOCUS AREAS",
+            style = MaterialTheme.typography.labelMedium.copy(
+                color = Color(0xFFB0B0B0),
+                fontWeight = FontWeight.SemiBold
             )
+        )
 
-            if (subtitle != null) {
-                Text(
-                    subtitle,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = Color(0xFFD8D8D8),
-                        lineHeight = 18.sp
-                    )
-                )
-            }
-
-            // Highlights (always visible) — pick first bullet from each section
-            HighlightsBlock(sections = sections)
-
-            // Expand / collapse details
-            ExpandToggle(expanded = expanded, onToggle = { expanded = !expanded })
-
-            AnimatedVisibility(visible = expanded) {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    sections.forEach { section ->
-                        SectionBlock(section)
+        val rows = sections.chunked(cols)
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            rows.forEach { row ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    row.forEach { section ->
+                        FocusPill(
+                            heading = section.heading,
+                            highlight = section.highlight.orEmpty(),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    repeat(cols - row.size) {
+                        Spacer(Modifier.weight(1f))
                     }
                 }
             }
@@ -269,9 +406,22 @@ private fun ExperienceRoleItem(
 }
 
 @Composable
+private fun BulletText(text: String) {
+    Text(
+        text = "• $text",
+        style = MaterialTheme.typography.bodySmall.copy(
+            color = Color(0xFFD8D8D8),
+            lineHeight = 18.sp
+        )
+    )
+}
+
+@Composable
 private fun TimelineRail(isLast: Boolean) {
     Column(
-        modifier = Modifier.width(18.dp),
+        modifier = Modifier
+            .width(18.dp)
+            .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -284,7 +434,7 @@ private fun TimelineRail(isLast: Boolean) {
             Box(
                 Modifier
                     .width(2.dp)
-                    .height(140.dp) // fixed rail segment (good enough visually)
+                    .fillMaxHeight()
                     .background(Color.White.copy(alpha = 0.14f))
             )
         }
@@ -292,56 +442,22 @@ private fun TimelineRail(isLast: Boolean) {
 }
 
 @Composable
-private fun HighlightsBlock(sections: List<ExperienceSection>) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(top = 6.dp)) {
-        sections.take(3).forEach { section ->
-            val highlight = section.bullets.firstOrNull() ?: return@forEach
-            Text(
-                text = "• ${section.heading}: $highlight",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color(0xFFE0E0E0),
-                    lineHeight = 18.sp
-                )
-            )
+fun highlightKeywords(text: String, highlightColor: Color = Color(0xFF4DB6AC)): AnnotatedString {
+    return buildAnnotatedString {
+        val parts = text.split("*")
+        parts.forEachIndexed { index, part ->
+            if (index % 2 == 1) {
+                withStyle(
+                    style = SpanStyle(
+                        color = highlightColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
+                    append(part)
+                }
+            } else {
+                append(part)
+            }
         }
     }
-}
-
-@Composable
-private fun SectionBlock(section: ExperienceSection) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(
-            section.heading,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(alpha = 0.95f)
-            )
-        )
-        section.bullets.forEach { bullet ->
-            Text(
-                text = "• $bullet",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color(0xFFD8D8D8),
-                    lineHeight = 18.sp
-                )
-            )
-        }
-    }
-}
-
-@Composable
-private fun ExpandToggle(expanded: Boolean, onToggle: () -> Unit) {
-    Text(
-        text = if (expanded) "Hide details" else "Show details",
-        modifier = Modifier
-            .padding(top = 4.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(Color.White.copy(alpha = 0.06f))
-            .clickable(onClick = onToggle)
-            .padding(horizontal = 10.dp, vertical = 6.dp),
-        style = MaterialTheme.typography.bodySmall.copy(
-            color = Color(0xFF8BE9FD),
-            fontWeight = FontWeight.Medium
-        )
-    )
 }
