@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.cv_ic
 import furkanozendev.feature.portfolio.presentation.generated.resources.github_ic
@@ -43,13 +44,14 @@ private data class SocialAppItem(
 @Composable
 fun AppCell(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
+    val res = LocalStringResources.current
 
     val apps = remember {
         listOf(
-            SocialAppItem("LinkedIn", Res.drawable.linkedin_ic, "https://www.linkedin.com/in/furkanozendev/"),
-            SocialAppItem("GitHub", Res.drawable.github_ic, "https://github.com/furkanozendev"),
-            SocialAppItem("Email", Res.drawable.gmail_ic, "mailto:furkanozendev@gmail.com"),
-            SocialAppItem("Download CV", Res.drawable.cv_ic, "https://your-cv-link") // DO NOT leave empty
+            SocialAppItem(res["linkedin_title"], Res.drawable.linkedin_ic, res["linkedin_url"]),
+            SocialAppItem(res["github_title"], Res.drawable.github_ic, res["github_url"]),
+            SocialAppItem(res["email_title"], Res.drawable.gmail_ic, res["email_url"]),
+            SocialAppItem(res["download_cv_title"], Res.drawable.cv_ic, res["download_cv_url"])
         )
     }
 

@@ -5,7 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         webMain.dependencies {
-            implementation(project(":core:domain"))
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
 }

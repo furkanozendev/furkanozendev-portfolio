@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
+import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 
 data class ReadingItem(
     val id: String,
@@ -132,7 +133,7 @@ fun WhatImReadingWidgetContent(
 
     BentoCard(
         modifier = modifier,
-        title = "Reading list (external)",
+        title = LocalStringResources.current["reading_title"],
         icon = Icons.Rounded.Book
     ) {
         val items = uiState.todayItems
@@ -154,8 +155,8 @@ fun WhatImReadingWidgetContent(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             SectionHeader(
-                title = "Reading list (external)",
-                subtitle = "External articles and blog posts I follow to stay current in Kotlin, Compose, and tooling.",
+                title = LocalStringResources.current["reading_title"],
+                subtitle = LocalStringResources.current["reading_header_subtitle"],
                 textPrimary = textPrimary,
                 textMuted = textMuted
             )
@@ -233,7 +234,7 @@ private fun HighlightedReadingCard(
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text = "External",
+                    text = LocalStringResources.current["reading_external"],
                     style = MaterialTheme.typography.labelSmall.copy(
                         color = textMuted,
                         fontWeight = FontWeight.Medium
@@ -284,6 +285,7 @@ private fun ReadingTag(text: String) {
 
 @Composable
 private fun EmptyReadingState(textPrimary: Color, textMuted: Color) {
+    val res = LocalStringResources.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -291,14 +293,14 @@ private fun EmptyReadingState(textPrimary: Color, textMuted: Color) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "No reading items yet.",
+            text = res["reading_empty_title"],
             style = MaterialTheme.typography.titleSmall.copy(
                 color = textPrimary,
                 fontWeight = FontWeight.SemiBold
             )
         )
         Text(
-            text = "Add 1–3 links you genuinely read. This section works best when it’s real, not filler.",
+            text = res["reading_empty_subtitle"],
             style = MaterialTheme.typography.bodySmall.copy(
                 color = textMuted,
                 lineHeight = 18.sp
@@ -314,10 +316,11 @@ private fun ReadingShowMoreRow(
     onToggle: () -> Unit,
     textMuted: Color
 ) {
+    val res = LocalStringResources.current
     val label = when {
-        expanded -> "Show less"
-        remainingCount > 0 -> "Show $remainingCount more"
-        else -> "Show more"
+        expanded -> res["reading_show_less"]
+        remainingCount > 0 -> res["reading_show_n_more", listOf(remainingCount.toString())]
+        else -> res["reading_show_more"]
     }
 
     Row(

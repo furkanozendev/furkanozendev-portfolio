@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
+import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 
 @Immutable
 private data class TechCategoryUi(
@@ -40,44 +42,40 @@ private data class TechCategoryUi(
 
 private enum class Emphasis { Primary, Secondary }
 
-private val techCategories = listOf(
-    TechCategoryUi(
-        title = "Android",
-        subtitle = "Shipped production features & UI systems",
-        emphasis = Emphasis.Primary,
-        items = listOf(
-            "Kotlin", "Jetpack Compose", "Coroutines", "Flow",
-            "Clean Architecture", "MVVM", "Hilt", "Testing (JUnit/MockK)"
-        )
-    ),
-    TechCategoryUi(
-        title = "Multiplatform",
-        subtitle = "Cross-platform UI & shared logic",
-        emphasis = Emphasis.Secondary,
-        items = listOf(
-            "Compose Multiplatform", "Kotlin Multiplatform", "Koin", "iOS targets", "Ktor"
-        )
-    ),
-    TechCategoryUi(
-        title = "Tooling",
-        subtitle = "DX, build systems, and metaprogramming",
-        emphasis = Emphasis.Secondary,
-        items = listOf(
-            "Compiler Plugins (IR)", "KSP", "Gradle Convention Plugins", "Analytics SDKs"
-        )
-    )
-)
-
 @Composable
 fun TechStackWidget(modifier: Modifier = Modifier) {
+    val res = LocalStringResources.current
     val accentPrimary = Color(0xFF8BE9FD)
     val accentSecondary = Color(0xFFBD93F9)
     val textPrimary = Color(0xFFEDEDED)
     val textMuted = Color(0xFFB0B0B0)
 
+    val techCategories = remember(res) {
+        listOf(
+            TechCategoryUi(
+                title = res["tech_stack_android"],
+                subtitle = res["tech_stack_android_subtitle"],
+                emphasis = Emphasis.Primary,
+                items = res.getList("tech_stack_android_items")
+            ),
+            TechCategoryUi(
+                title = res["tech_stack_multiplatform"],
+                subtitle = res["tech_stack_multiplatform_subtitle"],
+                emphasis = Emphasis.Secondary,
+                items = res.getList("tech_stack_multiplatform_items")
+            ),
+            TechCategoryUi(
+                title = res["tech_stack_tooling"],
+                subtitle = res["tech_stack_tooling_subtitle"],
+                emphasis = Emphasis.Secondary,
+                items = res.getList("tech_stack_tooling_items")
+            )
+        )
+    }
+
     BentoCard(
         modifier = modifier,
-        title = "Tech Stack",
+        title = res["tech_stack_title"],
         icon = Icons.Rounded.Code
     ) {
         BoxWithConstraints(Modifier) {
@@ -100,14 +98,14 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(gap)
             ) {
                 SectionHeader(
-                    title = "Kotlin-first engineer building product UI, architecture, and tooling.",
-                    subtitle = "Strongest in Android + Compose; experienced with KMP, backend support, and developer tooling.",
+                    title = res["tech_stack_header_title"],
+                    subtitle = res["tech_stack_header_subtitle"],
                     textPrimary = textPrimary,
                     textMuted = textMuted
                 )
 
                 Text(
-                    text = "Primary",
+                    text = res["tech_stack_primary"],
                     style = MaterialTheme.typography.titleSmall.copy(
                         color = textMuted,
                         fontWeight = FontWeight.SemiBold
@@ -122,7 +120,7 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = "Secondary",
+                    text = res["tech_stack_secondary"],
                     style = MaterialTheme.typography.titleSmall.copy(
                         color = textMuted,
                         fontWeight = FontWeight.SemiBold

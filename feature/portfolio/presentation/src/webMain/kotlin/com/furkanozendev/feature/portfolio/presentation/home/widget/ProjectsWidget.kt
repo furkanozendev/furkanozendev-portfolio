@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
+import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.project_duelist_banner
 import furkanozendev.feature.portfolio.presentation.generated.resources.project_github_banner
@@ -60,61 +61,50 @@ data class ProjectUiModel(
 
 @Composable
 fun ProjectsWidget(modifier: Modifier = Modifier) {
+    val res = LocalStringResources.current
     val uriHandler = LocalUriHandler.current
 
-    val portfolioLiveUrl = "https://your-portfolio-url.com"
-    val portfolioRepoUrl = "https://github.com/furkanozendev/your-portfolio-repo"
-    val nexKmpRepoUrl = "https://github.com/furkanozendev/nexkmp"
-    val githubProfileUrl = "https://github.com/furkanozendev"
-
-    val projects = remember {
+    val projects = remember(res) {
         listOf(
             ProjectUiModel(
                 bannerPainter = Res.drawable.project_portfolio_banner,
-                title = "Portfolio · Compose Multiplatform",
-                status = "Live",
+                title = res["projects_portfolio_title"],
+                status = res["projects_portfolio_status"],
                 statusStyle = ProjectStatusStyle.Live,
-                description = "Personal portfolio built with Kotlin + Compose Multiplatform (web). Responsive layout, Bento widgets, and a cohesive design system.",
-                techStack = listOf("Kotlin", "Compose Multiplatform", "WASM", "Gradle"),
-                primaryActionLabel = "View live",
-                onPrimaryClick = { uriHandler.openUri(portfolioLiveUrl) },
-                secondaryActionLabel = "View code",
-                onSecondaryClick = { uriHandler.openUri(portfolioRepoUrl) }
+                description = res["projects_portfolio_desc"],
+                techStack = res.getList("projects_portfolio_tech"),
+                primaryActionLabel = res["projects_view_live"],
+                onPrimaryClick = { uriHandler.openUri(res["projects_portfolio_url"]) },
+                secondaryActionLabel = res["projects_view_code"],
+                onSecondaryClick = { uriHandler.openUri(res["projects_portfolio_github_url"]) }
             ),
             ProjectUiModel(
                 bannerPainter = Res.drawable.project_duelist_banner,
-                title = "DuelistAI · Card Battler",
-                status = "In progress · Private",
+                title = res["projects_duelist_title"],
+                status = res["projects_duelist_status"],
                 statusStyle = ProjectStatusStyle.Private,
-                description = "KMP card battler exploring AI-generated cards, Ktor/Supabase backend, and Compose UI. Currently prototyping game systems and infrastructure.",
-                techStack = listOf("KMP", "Compose", "Ktor", "Supabase", "PostgreSQL", "Clean Architecture", "Pixel UI")
+                description = res["projects_duelist_desc"],
+                techStack = res.getList("projects_duelist_tech")
             ),
             ProjectUiModel(
                 bannerPainter = Res.drawable.project_github_banner,
-                title = "NexKMP · KMP Architecture & Compiler Showcase",
-                status = "Public · Reference Project",
+                title = res["projects_nexkmp_title"],
+                status = res["projects_nexkmp_status"],
                 statusStyle = ProjectStatusStyle.Neutral,
-                description = "A production-grade Kotlin Multiplatform reference project showcasing modular architecture, Gradle build-logic conventions, and a custom IR-based compiler plugin. Designed as a learning and demonstration ground rather than a generic starter template.",
-                techStack = listOf(
-                    "Kotlin Multiplatform",
-                    "Compose Multiplatform",
-                    "IR Compiler Plugin",
-                    "Gradle Build Logic",
-                    "Convention Plugins",
-                    "Clean Architecture"
-                ),
-                primaryActionLabel = "View code",
-                onPrimaryClick = { uriHandler.openUri(nexKmpRepoUrl) }
+                description = res["projects_nexkmp_desc"],
+                techStack = res.getList("projects_nexkmp_tech"),
+                primaryActionLabel = res["projects_view_code"],
+                onPrimaryClick = { uriHandler.openUri(res["projects_nexkmp_url"]) }
             ),
             ProjectUiModel(
                 bannerPainter = Res.drawable.project_github_banner,
-                title = "More on GitHub",
-                status = "Public repositories",
+                title = res["projects_github_title"],
+                status = res["projects_github_status"],
                 statusStyle = ProjectStatusStyle.Neutral,
-                description = "Compiler plugin experiments, Gradle convention plugins, Compose samples, and backend services.",
-                techStack = listOf("Kotlin", "Compiler Plugins", "KSP", "Gradle", "Compose"),
-                primaryActionLabel = "Open GitHub",
-                onPrimaryClick = { uriHandler.openUri(githubProfileUrl) }
+                description = res["projects_github_desc"],
+                techStack = res.getList("projects_github_tech"),
+                primaryActionLabel = res["projects_open_github"],
+                onPrimaryClick = { uriHandler.openUri(res["projects_github_url"]) }
             )
         )
     }
@@ -124,7 +114,7 @@ fun ProjectsWidget(modifier: Modifier = Modifier) {
 
     BentoCard(
         modifier = modifier,
-        title = "Projects",
+        title = res["projects_title"],
         icon = Icons.Rounded.Apps
     ) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
@@ -140,8 +130,8 @@ fun ProjectsWidget(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 SectionHeader(
-                    title = "Selected projects",
-                    subtitle = "Representative work focused on architecture, UI systems, and developer tooling — not a full list.",
+                    title = res["projects_header_title"],
+                    subtitle = res["projects_header_subtitle"],
                     textPrimary = textPrimary,
                     textMuted = textMuted
                 )

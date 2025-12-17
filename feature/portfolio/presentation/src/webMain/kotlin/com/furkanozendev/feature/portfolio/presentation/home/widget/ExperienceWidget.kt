@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,9 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
+import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.papara_logo
-import kotlinx.atomicfu.TraceBase.None.append
 import org.jetbrains.compose.resources.painterResource
 
 @Immutable
@@ -55,37 +54,6 @@ data class ExperienceSection(
     val heading: String,
     val highlight: String?,
     val bullets: List<String> = emptyList()
-)
-
-
-private val androidDevSections = listOf(
-    ExperienceSection(
-        heading = "Product Engineering",
-        highlight = "Owned critical user flows (*Card*, *Investment*, *Onboarding*) with focus on high-performance UI."
-    ),
-    ExperienceSection(
-        heading = "Accessibility & Innovation",
-        highlight = "Architected 'SketchMyCard' (*Canvas engine*) and 'VoiceCard' (*Bluetooth/TTS*) for accessibility."
-    ),
-    ExperienceSection(
-        heading = "Architecture & Platform",
-        highlight = "Led migration to *Jetpack Compose*, establishing a reusable *Design System* and modular boundaries."
-    ),
-    ExperienceSection(
-        heading = "Testing & Tooling",
-        highlight = "Elevated quality via *Maestro E2E*, unit testing culture, and internal *CLI tooling*."
-    )
-)
-
-private val androidDevKeyWins = listOf(
-    "Sole owner of accessibility-driven features used in production card flows.",
-    "Designed Compose-based UI foundations reused across multiple product areas.",
-    "Improved long-term maintainability by enforcing modularization and architectural consistency during platform migration."
-)
-
-private val internSections = ExperienceSection(
-    heading = "Internship",
-    highlight = "Contributed to onboarding/KYC improvements and assisted early-stage architectural migrations."
 )
 
 @Immutable
@@ -117,9 +85,47 @@ private fun rememberExperienceSpec(maxWidth: Dp): ExperienceSpec {
 
 @Composable
 fun ExperienceWidget(modifier: Modifier = Modifier) {
+    val res = LocalStringResources.current
+
+    val androidDevSections = remember(res) {
+        listOf(
+            ExperienceSection(
+                heading = res["experience_section_product"],
+                highlight = res["experience_section_product_highlight"]
+            ),
+            ExperienceSection(
+                heading = res["experience_section_accessibility"],
+                highlight = res["experience_section_accessibility_highlight"]
+            ),
+            ExperienceSection(
+                heading = res["experience_section_architecture"],
+                highlight = res["experience_section_architecture_highlight"]
+            ),
+            ExperienceSection(
+                heading = res["experience_section_testing"],
+                highlight = res["experience_section_testing_highlight"]
+            )
+        )
+    }
+
+    val androidDevKeyWins = remember(res) {
+        listOf(
+            res["experience_key_wins_1"],
+            res["experience_key_wins_2"],
+            res["experience_key_wins_3"]
+        )
+    }
+
+    val internSection = remember(res) {
+        ExperienceSection(
+            heading = res["experience_section_internship"],
+            highlight = res["experience_section_internship_highlight"]
+        )
+    }
+
     BentoCard(
         modifier = modifier,
-        title = "Experience",
+        title = res["experience_title"],
         icon = Icons.Rounded.Work
     ) {
         BoxWithConstraints {
@@ -132,33 +138,35 @@ fun ExperienceWidget(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(spec.itemGap)
             ) {
                 SectionHeader(
-                    title = "Professional experience",
-                    subtitle = "Hands-on product engineering across fintech domains, accessibility features, and platform modernization.",
+                    title = res["experience_header_title"],
+                    subtitle = res["experience_header_subtitle"],
                     textPrimary = Color(0xFFEDEDED),
                     textMuted = Color(0xFFB0B0B0)
                 )
 
                 CompanyHeaderRow(
                     logo = painterResource(Res.drawable.papara_logo),
-                    company = "Papara",
-                    period = "Feb 2022 — Dec 2025 · 3 yrs 10 mos"
+                    company = res["experience_company_papara"],
+                    period = res["experience_papara_period"]
                 )
 
                 ExperienceRoleItem(
-                    title = "Android Developer",
-                    date = "Apr 2022 — Dec 2025",
-                    subtitle = "Contributed to major product areas and helped modernize the engineering foundation of one of Turkey’s largest fintech mobile apps.",
+                    title = res["experience_role_android_dev"],
+                    date = res["experience_role_android_dev_period"],
+                    subtitle = res["experience_role_android_dev_subtitle"],
                     sections = androidDevSections,
                     keyWins = androidDevKeyWins,
+                    keyWinsTitle = res["experience_key_wins_title"],
+                    focusAreasLabel = res["experience_focus_areas"],
                     spec = spec,
                     showTimeline = spec.showTimeline,
                     isLast = false
                 )
 
                 ExperienceInternItem(
-                    title = "Android Developer Intern",
-                    date = "Feb 2022 — Apr 2022",
-                    section = internSections,
+                    title = res["experience_role_intern"],
+                    date = res["experience_role_intern_period"],
+                    section = internSection,
                     spec = spec,
                     showTimeline = spec.showTimeline,
                     isLast = true
@@ -167,6 +175,7 @@ fun ExperienceWidget(modifier: Modifier = Modifier) {
         }
     }
 }
+
 
 @Composable
 private fun CompanyHeaderRow(
@@ -208,6 +217,8 @@ private fun ExperienceRoleItem(
     subtitle: String? = null,
     sections: List<ExperienceSection>,
     keyWins: List<String>,
+    keyWinsTitle: String,
+    focusAreasLabel: String,
     spec: ExperienceSpec,
     showTimeline: Boolean,
     isLast: Boolean
@@ -232,12 +243,14 @@ private fun ExperienceRoleItem(
 
             FocusAreasGrid(
                 sections = sections,
-                compact = compact
+                compact = compact,
+                label = focusAreasLabel
             )
 
             KeyWinsBlock(
                 bullets = keyWins,
-                compact = compact
+                compact = compact,
+                title = keyWinsTitle
             )
         }
     }
@@ -246,13 +259,14 @@ private fun ExperienceRoleItem(
 @Composable
 private fun KeyWinsBlock(
     bullets: List<String>,
-    compact: Boolean
+    compact: Boolean,
+    title: String
 ) {
     if (bullets.isEmpty()) return
 
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
-            text = "Engineering impact",
+            text = title,
             style = MaterialTheme.typography.labelMedium.copy(
                 color = Color(0xFFB0B0B0),
                 fontWeight = FontWeight.SemiBold
@@ -369,13 +383,14 @@ private fun RoleHeader(
 @Composable
 private fun FocusAreasGrid(
     sections: List<ExperienceSection>,
-    compact: Boolean
+    compact: Boolean,
+    label: String
 ) {
     val cols = if (compact) 1 else 2
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
-            text = "KEY FOCUS AREAS",
+            text = label,
             style = MaterialTheme.typography.labelMedium.copy(
                 color = Color(0xFFB0B0B0),
                 fontWeight = FontWeight.SemiBold

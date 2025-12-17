@@ -30,16 +30,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
-
-enum class AppLanguage {
-    EN, TR
-}
+import com.furkanozendev.feature.portfolio.domain.model.AppLanguage
+import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 
 @Composable
 fun LanguageToggleButton(
     modifier: Modifier = Modifier,
-    initialLanguage: AppLanguage = AppLanguage.EN,
+    initialLanguage: AppLanguage,
     onLanguageChanged: (AppLanguage) -> Unit = {}
 ) {
     var currentLanguage by remember { mutableStateOf(initialLanguage) }
@@ -84,7 +81,7 @@ fun LanguageToggleButton(
         ) {
             Icon(
                 imageVector = Icons.Rounded.Language,
-                contentDescription = "Change Language",
+                contentDescription = LocalStringResources.current["change_language"],
                 tint = contentColor,
                 modifier = Modifier.size(20.dp)
             )

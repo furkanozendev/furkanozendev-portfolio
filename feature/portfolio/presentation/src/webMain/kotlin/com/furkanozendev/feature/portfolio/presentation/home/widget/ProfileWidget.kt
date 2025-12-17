@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.profile_pic
 import kotlinx.coroutines.delay
@@ -63,7 +64,6 @@ private data class ProfileWidgetSpec(
 
 @Composable
 private fun rememberProfileWidgetSpec(maxWidth: Dp): ProfileWidgetSpec {
-    // Breakpoints (keep minimal, stable)
     val isCompact = maxWidth < 520.dp
     val isWide = maxWidth >= 720.dp
     val isVeryWide = maxWidth >= 1000.dp
@@ -117,11 +117,10 @@ private fun rememberProfileWidgetSpec(maxWidth: Dp): ProfileWidgetSpec {
 
 @Composable
 fun ProfileWidget(
-    modifier: Modifier = Modifier,
-    name: String = "Furkan Özen",
-    title: String = "Senior Android & Kotlin Engineer",
-    tagline: String = "Building fast, scalable Android experiences",
+    modifier: Modifier = Modifier
 ) {
+    val res = LocalStringResources.current
+
     val keywordColor1 = Color(0xFF8BE9FD)
     val keywordColor2 = Color(0xFFFE7A36)
 
@@ -137,14 +136,14 @@ fun ProfileWidget(
                 GradientBorderAvatar(
                     painter = painterResource(Res.drawable.profile_pic),
                     size = spec.avatarSize,
-                    contentDescription = name
+                    contentDescription = res["name"]
                 )
             },
             text = {
                 ProfileTextContent(
-                    name = name,
-                    title = title,
-                    tagline = tagline,
+                    name = res["name"],
+                    title = res["title"],
+                    tagline = res["tagline"],
                     titleSize = spec.titleSize,
                     subtitleSize = spec.subtitleSize,
                     taglineSize = spec.taglineSize,
