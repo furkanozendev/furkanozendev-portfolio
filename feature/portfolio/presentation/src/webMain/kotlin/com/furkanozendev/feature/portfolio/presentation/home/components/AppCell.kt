@@ -17,6 +17,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,14 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.furkanozendev.core.designsystem.colors.LocalHomeColors
-import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
-import furkanozendev.feature.portfolio.presentation.generated.resources.Res
-import furkanozendev.feature.portfolio.presentation.generated.resources.cv_ic
-import furkanozendev.feature.portfolio.presentation.generated.resources.github_ic
-import furkanozendev.feature.portfolio.presentation.generated.resources.gmail_ic
-import furkanozendev.feature.portfolio.presentation.generated.resources.linkedin_ic
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 private data class SocialAppItem(
     val title: String,
@@ -43,17 +40,17 @@ private data class SocialAppItem(
 )
 
 @Composable
-fun AppCell(modifier: Modifier = Modifier) {
+fun AppCell(
+    modifier: Modifier = Modifier,
+    viewModel: AppCellViewModel = koinViewModel()
+) {
     val uriHandler = LocalUriHandler.current
-    val res = LocalStringResources.current
+    val uiState by viewModel.uiState.collectAsState()
 
-    val apps = remember {
-        listOf(
-            SocialAppItem(res["linkedin_title"], Res.drawable.linkedin_ic, res["linkedin_url"]),
-            SocialAppItem(res["github_title"], Res.drawable.github_ic, res["github_url"]),
-            SocialAppItem(res["email_title"], Res.drawable.gmail_ic, res["email_url"]),
-            SocialAppItem(res["download_cv_title"], Res.drawable.cv_ic, res["download_cv_url"])
-        )
+    val apps = remember(uiState.apps) {
+        uiState.apps.map {
+            SocialAppItem(it.title, it.icon, it.url)
+        }
     }
 
     BoxWithConstraints(modifier = modifier) {

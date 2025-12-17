@@ -1,4 +1,4 @@
-package com.furkanozendev.feature.portfolio.presentation.home.widget
+package com.furkanozendev.feature.portfolio.presentation.home.widget.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,10 +30,10 @@ import androidx.compose.ui.unit.sp
 import com.furkanozendev.core.designsystem.colors.LocalHomeColors
 import com.furkanozendev.feature.portfolio.presentation.home.components.GradientBorderAvatar
 import com.furkanozendev.feature.portfolio.presentation.home.components.TypewriterText
-import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.profile_pic
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Immutable
 private data class ProfileWidgetSpec(
@@ -100,11 +102,13 @@ private fun rememberProfileWidgetSpec(maxWidth: Dp): ProfileWidgetSpec {
     }
 }
 
+
 @Composable
 fun ProfileWidget(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
-    val res = LocalStringResources.current
+    val uiState by viewModel.uiState.collectAsState()
     val colors = LocalHomeColors.current
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
@@ -119,7 +123,7 @@ fun ProfileWidget(
                 GradientBorderAvatar(
                     painter = painterResource(Res.drawable.profile_pic),
                     size = spec.avatarSize,
-                    contentDescription = res["name"],
+                    contentDescription = uiState.name,
                     gradient = Brush.linearGradient(
                         colors = listOf(colors.glowBlue, colors.glowOrange)
                     ),
@@ -128,9 +132,9 @@ fun ProfileWidget(
             },
             text = {
                 ProfileTextContent(
-                    name = res["name"],
-                    title = res["title"],
-                    tagline = res["tagline"],
+                    name = uiState.name,
+                    title = uiState.title,
+                    tagline = uiState.tagline,
                     titleSize = spec.titleSize,
                     subtitleSize = spec.subtitleSize,
                     taglineSize = spec.taglineSize,

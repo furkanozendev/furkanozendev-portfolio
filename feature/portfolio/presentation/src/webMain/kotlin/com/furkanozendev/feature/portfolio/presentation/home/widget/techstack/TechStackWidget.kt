@@ -1,4 +1,4 @@
-package com.furkanozendev.feature.portfolio.presentation.home.widget
+package com.furkanozendev.feature.portfolio.presentation.home.widget.techstack
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,7 +10,8 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -19,40 +20,21 @@ import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 import com.furkanozendev.feature.portfolio.presentation.home.components.tech.Emphasis
 import com.furkanozendev.feature.portfolio.presentation.home.components.tech.TechCategoryCard
-import com.furkanozendev.feature.portfolio.presentation.home.components.tech.TechCategoryUi
-import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun TechStackWidget(modifier: Modifier = Modifier) {
-    val res = LocalStringResources.current
+fun TechStackWidget(
+    modifier: Modifier = Modifier,
+    viewModel: TechStackViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
     val colors = LocalHomeColors.current
 
-    val techCategories = remember(res) {
-        listOf(
-            TechCategoryUi(
-                title = res["tech_stack_android"],
-                subtitle = res["tech_stack_android_subtitle"],
-                emphasis = Emphasis.Primary,
-                items = res.getList("tech_stack_android_items")
-            ),
-            TechCategoryUi(
-                title = res["tech_stack_multiplatform"],
-                subtitle = res["tech_stack_multiplatform_subtitle"],
-                emphasis = Emphasis.Secondary,
-                items = res.getList("tech_stack_multiplatform_items")
-            ),
-            TechCategoryUi(
-                title = res["tech_stack_tooling"],
-                subtitle = res["tech_stack_tooling_subtitle"],
-                emphasis = Emphasis.Secondary,
-                items = res.getList("tech_stack_tooling_items")
-            )
-        )
-    }
+    val techCategories = uiState.categories
 
     BentoCard(
         modifier = modifier,
-        title = res["tech_stack_title"],
+        title = uiState.title,
         icon = Icons.Rounded.Code
     ) {
         BoxWithConstraints(Modifier) {
@@ -75,14 +57,14 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(gap)
             ) {
                 SectionHeader(
-                    title = res["tech_stack_header_title"],
-                    subtitle = res["tech_stack_header_subtitle"],
+                    title = uiState.headerTitle,
+                    subtitle = uiState.headerSubtitle,
                     textPrimary = colors.textPrimary,
                     textMuted = colors.textMuted
                 )
 
                 Text(
-                    text = res["tech_stack_primary"],
+                    text = uiState.primaryLabel,
                     style = MaterialTheme.typography.titleSmall.copy(
                         color = colors.textMuted,
                         fontWeight = FontWeight.SemiBold
@@ -90,7 +72,7 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
                 )
 
                 TechCategoryCard(
-                    category = primary.first(),
+                    category = primary.firstOrNull(),
                     accent = colors.accentPrimary,
                     textPrimary = colors.textPrimary,
                     textMuted = colors.textMuted,
@@ -98,7 +80,7 @@ fun TechStackWidget(modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = res["tech_stack_secondary"],
+                    text = uiState.secondaryLabel,
                     style = MaterialTheme.typography.titleSmall.copy(
                         color = colors.textMuted,
                         fontWeight = FontWeight.SemiBold

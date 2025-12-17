@@ -1,4 +1,4 @@
-package com.furkanozendev.feature.portfolio.presentation.home.widget
+package com.furkanozendev.feature.portfolio.presentation.home.widget.projects
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -23,13 +25,8 @@ import com.furkanozendev.core.designsystem.colors.LocalHomeColors
 import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 import com.furkanozendev.feature.portfolio.presentation.home.components.projects.ProjectCardGrid
-import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
-import furkanozendev.feature.portfolio.presentation.generated.resources.Res
-import furkanozendev.feature.portfolio.presentation.generated.resources.project_duelist_banner
-import furkanozendev.feature.portfolio.presentation.generated.resources.project_github_banner
-import furkanozendev.feature.portfolio.presentation.generated.resources.project_portfolio_banner
-import furkanozendev.feature.portfolio.presentation.generated.resources.project_nexkmp_banner
 import org.jetbrains.compose.resources.DrawableResource
+import org.koin.compose.viewmodel.koinViewModel
 
 enum class ProjectStatusStyle { Live, InProgress, Neutral, Private }
 
@@ -47,60 +44,34 @@ data class ProjectUiModel(
 )
 
 @Composable
-fun ProjectsWidget(modifier: Modifier = Modifier) {
-    val res = LocalStringResources.current
+fun ProjectsWidget(
+    modifier: Modifier = Modifier,
+    viewModel: ProjectsViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
     val uriHandler = LocalUriHandler.current
-
-    val projects = remember(res) {
-        listOf(
-            ProjectUiModel(
-                bannerPainter = Res.drawable.project_portfolio_banner,
-                title = res["projects_portfolio_title"],
-                status = res["projects_portfolio_status"],
-                statusStyle = ProjectStatusStyle.Live,
-                description = res["projects_portfolio_desc"],
-                techStack = res.getList("projects_portfolio_tech"),
-                primaryActionLabel = res["projects_view_live"],
-                onPrimaryClick = { uriHandler.openUri(res["projects_portfolio_url"]) },
-                secondaryActionLabel = res["projects_view_code"],
-                onSecondaryClick = { uriHandler.openUri(res["projects_portfolio_github_url"]) }
-            ),
-            ProjectUiModel(
-                bannerPainter = Res.drawable.project_duelist_banner,
-                title = res["projects_duelist_title"],
-                status = res["projects_duelist_status"],
-                statusStyle = ProjectStatusStyle.Private,
-                description = res["projects_duelist_desc"],
-                techStack = res.getList("projects_duelist_tech")
-            ),
-            ProjectUiModel(
-                bannerPainter = Res.drawable.project_nexkmp_banner,
-                title = res["projects_nexkmp_title"],
-                status = res["projects_nexkmp_status"],
-                statusStyle = ProjectStatusStyle.Neutral,
-                description = res["projects_nexkmp_desc"],
-                techStack = res.getList("projects_nexkmp_tech"),
-                primaryActionLabel = res["projects_view_code"],
-                onPrimaryClick = { uriHandler.openUri(res["projects_nexkmp_url"]) }
-            ),
-            ProjectUiModel(
-                bannerPainter = Res.drawable.project_github_banner,
-                title = res["projects_github_title"],
-                status = res["projects_github_status"],
-                statusStyle = ProjectStatusStyle.Neutral,
-                description = res["projects_github_desc"],
-                techStack = res.getList("projects_github_tech"),
-                primaryActionLabel = res["projects_open_github"],
-                onPrimaryClick = { uriHandler.openUri(res["projects_github_url"]) }
-            )
-        )
-    }
-
     val colors = LocalHomeColors.current
+
+    val projects = remember(uiState) {
+        uiState.projects.map { item ->
+            ProjectUiModel(
+                bannerPainter = item.bannerPainter,
+                title = item.title,
+                status = item.status,
+                statusStyle = item.statusStyle,
+                description = item.description,
+                techStack = item.techStack,
+                primaryActionLabel = item.primaryActionLabel,
+                onPrimaryClick = item.primaryActionUrl?.let { url -> { uriHandler.openUri(url) } },
+                secondaryActionLabel = item.secondaryActionLabel,
+                onSecondaryClick = item.secondaryActionUrl?.let { url -> { uriHandler.openUri(url) } }
+            )
+        }
+    }
 
     BentoCard(
         modifier = modifier,
-        title = res["projects_title"],
+        title = uiState.title,
         icon = Icons.Rounded.Apps
     ) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
@@ -116,8 +87,8 @@ fun ProjectsWidget(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 SectionHeader(
-                    title = res["projects_header_title"],
-                    subtitle = res["projects_header_subtitle"],
+                    title = uiState.headerTitle,
+                    subtitle = uiState.headerSubtitle,
                     textPrimary = colors.textPrimary,
                     textMuted = colors.textMuted
                 )

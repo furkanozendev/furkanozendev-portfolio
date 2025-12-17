@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.furkanozendev.core.designsystem.colors.HomeColors
 import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
-import com.furkanozendev.feature.portfolio.presentation.home.widget.ReadingItem
+import com.furkanozendev.feature.portfolio.presentation.home.widget.whatImReading.ReadingItem
 
 @Composable
 internal fun HighlightedReadingCard(

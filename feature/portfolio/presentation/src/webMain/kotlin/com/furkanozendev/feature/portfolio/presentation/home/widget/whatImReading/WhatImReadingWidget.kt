@@ -1,4 +1,4 @@
-package com.furkanozendev.feature.portfolio.presentation.home.widget
+package com.furkanozendev.feature.portfolio.presentation.home.widget.whatImReading
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +10,7 @@ import androidx.compose.material.icons.rounded.Book
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +26,7 @@ import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
 import com.furkanozendev.feature.portfolio.presentation.home.components.reading.HighlightedReadingCard
 import com.furkanozendev.feature.portfolio.presentation.home.components.reading.ReadingShowMoreRow
-import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
+import org.koin.compose.viewmodel.koinViewModel
 
 data class ReadingItem(
     val id: String,
@@ -42,89 +43,32 @@ data class KotlinReadingUiState(
 @Composable
 fun WhatImReadingWidget(
     modifier: Modifier = Modifier,
-    items: List<ReadingItem> = sampleReadingItems(),
+    viewModel: WhatImReadingViewModel = koinViewModel(),
     initiallyExpanded: Boolean = false,
     initialVisibleCount: Int = 3
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val uriHandler = LocalUriHandler.current
-    var expanded by remember(items) { mutableStateOf(initiallyExpanded) }
-
-    WhatImReadingWidgetContent(
-        modifier = modifier,
-        uiState = KotlinReadingUiState(todayItems = items),
-        expanded = expanded,
-        initialVisibleCount = initialVisibleCount,
-        onToggleExpanded = { expanded = !expanded },
-        onOpen = { uriHandler.openUri(it.url) }
-    )
-}
-
-@Composable
-private fun sampleReadingItems() = listOf(
-    ReadingItem(
-        id = "1",
-        title = "Understanding Compose Multiplatform: Architecture & Patterns",
-        source = "Medium · Kotlin/Compose",
-        url = "https://medium.com/...",
-        tags = listOf("Compose", "KMP", "Architecture")
-    ),
-    ReadingItem(
-        id = "2",
-        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
-        source = "Blog · Kotlin",
-        url = "https://...",
-        tags = listOf("Compiler Plugins", "IR", "Tooling")
-    ),
-    ReadingItem(
-        id = "3",
-        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
-        source = "Blog · Kotlin",
-        url = "https://...",
-        tags = listOf("Compiler Plugins", "IR", "Tooling")
-    ),
-    ReadingItem(
-        id = "4",
-        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
-        source = "Blog · Kotlin",
-        url = "https://...",
-        tags = listOf("Compiler Plugins", "IR", "Tooling")
-    ),
-    ReadingItem(
-        id = "5",
-        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
-        source = "Blog · Kotlin",
-        url = "https://...",
-        tags = listOf("Compiler Plugins", "IR", "Tooling")
-    ),
-    ReadingItem(
-        id = "6",
-        title = "Kotlin Compiler Plugins: IR basics for real-world projects",
-        source = "Blog · Kotlin",
-        url = "https://...",
-        tags = listOf("Compiler Plugins", "IR", "Tooling")
-    ),
-)
-
-@Composable
-fun WhatImReadingWidgetContent(
-    modifier: Modifier = Modifier,
-    uiState: KotlinReadingUiState,
-    expanded: Boolean,
-    initialVisibleCount: Int = 3,
-    onToggleExpanded: () -> Unit,
-    onOpen: (ReadingItem) -> Unit
-) {
+    var expanded by remember { mutableStateOf(initiallyExpanded) }
     val colors = LocalHomeColors.current
 
     BentoCard(
         modifier = modifier,
-        title = LocalStringResources.current["reading_title"],
+        title = uiState.title,
         icon = Icons.Rounded.Book
     ) {
-        val items = uiState.todayItems
+        val items = uiState.items.map {
+            ReadingItem(
+                id = it.id,
+                title = it.title,
+                source = it.source,
+                url = it.url,
+                tags = it.tags
+            )
+        }
 
         if (items.isEmpty()) {
-            EmptyReadingState(colors)
+            EmptyReadingState(colors = colors, title = uiState.emptyTitle, subtitle = uiState.emptySubtitle)
             return@BentoCard
         }
 
@@ -140,8 +84,8 @@ fun WhatImReadingWidgetContent(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             SectionHeader(
-                title = LocalStringResources.current["reading_title"],
-                subtitle = LocalStringResources.current["reading_header_subtitle"],
+                title = uiState.title,
+                subtitle = uiState.headerSubtitle,
                 textPrimary = colors.textPrimary,
                 textMuted = colors.textMuted
             )
@@ -150,7 +94,7 @@ fun WhatImReadingWidgetContent(
                 HighlightedReadingCard(
                     item = item,
                     colors = colors,
-                    onOpen = { onOpen(item) }
+                    onOpen = { uriHandler.openUri(item.url) }
                 )
             }
 
@@ -159,7 +103,7 @@ fun WhatImReadingWidgetContent(
                 ReadingShowMoreRow(
                     expanded = expanded,
                     remainingCount = remaining.coerceAtLeast(0),
-                    onToggle = onToggleExpanded,
+                    onToggle = { expanded = !expanded },
                     colors = colors
                 )
             }
@@ -168,8 +112,7 @@ fun WhatImReadingWidgetContent(
 }
 
 @Composable
-private fun EmptyReadingState(colors: HomeColors) {
-    val res = LocalStringResources.current
+private fun EmptyReadingState(colors: HomeColors, title: String, subtitle: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -177,14 +120,14 @@ private fun EmptyReadingState(colors: HomeColors) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = res["reading_empty_title"],
+            text = title,
             style = MaterialTheme.typography.titleSmall.copy(
                 color = colors.textPrimary,
                 fontWeight = FontWeight.SemiBold
             )
         )
         Text(
-            text = res["reading_empty_subtitle"],
+            text = subtitle,
             style = MaterialTheme.typography.bodySmall.copy(
                 color = colors.textMuted,
                 lineHeight = 18.sp

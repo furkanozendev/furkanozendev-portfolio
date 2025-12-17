@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.furkanozendev.core.designsystem.colors.HomeColors
-import com.furkanozendev.feature.portfolio.presentation.home.widget.ProjectUiModel
+import com.furkanozendev.feature.portfolio.presentation.home.widget.projects.ProjectUiModel
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

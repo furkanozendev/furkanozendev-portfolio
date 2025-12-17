@@ -1,4 +1,4 @@
-package com.furkanozendev.feature.portfolio.presentation.home.widget
+package com.furkanozendev.feature.portfolio.presentation.home.widget.experience
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,10 +33,10 @@ import com.furkanozendev.feature.portfolio.presentation.home.components.experien
 import com.furkanozendev.feature.portfolio.presentation.home.components.experience.FocusPill
 import com.furkanozendev.feature.portfolio.presentation.home.components.experience.RoleHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.experience.TimelineRail
-import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.papara_logo
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Immutable
 data class ExperienceSection(
@@ -71,49 +73,16 @@ private fun rememberExperienceSpec(maxWidth: Dp): ExperienceSpec {
 }
 
 @Composable
-fun ExperienceWidget(modifier: Modifier = Modifier) {
-    val res = LocalStringResources.current
+fun ExperienceWidget(
+    modifier: Modifier = Modifier,
+    viewModel: ExperienceViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
     val colors = LocalHomeColors.current
-
-    val androidDevSections = remember(res) {
-        listOf(
-            ExperienceSection(
-                heading = res["experience_section_product"],
-                highlight = res["experience_section_product_highlight"]
-            ),
-            ExperienceSection(
-                heading = res["experience_section_accessibility"],
-                highlight = res["experience_section_accessibility_highlight"]
-            ),
-            ExperienceSection(
-                heading = res["experience_section_architecture"],
-                highlight = res["experience_section_architecture_highlight"]
-            ),
-            ExperienceSection(
-                heading = res["experience_section_testing"],
-                highlight = res["experience_section_testing_highlight"]
-            )
-        )
-    }
-
-    val androidDevKeyWins = remember(res) {
-        listOf(
-            res["experience_key_wins_1"],
-            res["experience_key_wins_2"],
-            res["experience_key_wins_3"]
-        )
-    }
-
-    val internSection = remember(res) {
-        ExperienceSection(
-            heading = res["experience_section_internship"],
-            highlight = res["experience_section_internship_highlight"]
-        )
-    }
 
     BentoCard(
         modifier = modifier,
-        title = res["experience_title"],
+        title = uiState.title,
         icon = Icons.Rounded.Work
     ) {
         BoxWithConstraints {
@@ -126,42 +95,54 @@ fun ExperienceWidget(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(spec.itemGap)
             ) {
                 SectionHeader(
-                    title = res["experience_header_title"],
-                    subtitle = res["experience_header_subtitle"],
+                    title = uiState.headerTitle,
+                    subtitle = uiState.headerSubtitle,
                     textPrimary = colors.textPrimary,
                     textMuted = colors.textMuted
                 )
 
                 CompanyHeaderRow(
                     logo = painterResource(Res.drawable.papara_logo),
-                    company = res["experience_company_papara"],
-                    period = res["experience_papara_period"],
+                    company = uiState.company,
+                    period = uiState.companyPeriod,
                     colors = colors
                 )
 
-                ExperienceRoleItem(
-                    title = res["experience_role_android_dev"],
-                    date = res["experience_role_android_dev_period"],
-                    subtitle = res["experience_role_android_dev_subtitle"],
-                    sections = androidDevSections,
-                    keyWins = androidDevKeyWins,
-                    keyWinsTitle = res["experience_key_wins_title"],
-                    focusAreasLabel = res["experience_focus_areas"],
-                    spec = spec,
-                    showTimeline = spec.showTimeline,
-                    isLast = false,
-                    colors = colors
-                )
+                uiState.roles.forEachIndexed { index, role ->
+                    val sections = role.sections.map {
+                        ExperienceSection(
+                            heading = it.heading,
+                            highlight = it.highlight,
+                            bullets = it.bullets
+                        )
+                    }
 
-                ExperienceInternItem(
-                    title = res["experience_role_intern"],
-                    date = res["experience_role_intern_period"],
-                    section = internSection,
-                    spec = spec,
-                    showTimeline = spec.showTimeline,
-                    isLast = true,
-                    colors = colors
-                )
+                    if (role.isIntern) {
+                        ExperienceInternItem(
+                            title = role.title,
+                            date = role.date,
+                            section = sections.firstOrNull() ?: ExperienceSection("", ""),
+                            spec = spec,
+                            showTimeline = spec.showTimeline,
+                            isLast = index == uiState.roles.lastIndex,
+                            colors = colors
+                        )
+                    } else {
+                        ExperienceRoleItem(
+                            title = role.title,
+                            date = role.date,
+                            subtitle = role.subtitle,
+                            sections = sections,
+                            keyWins = role.keyWins,
+                            keyWinsTitle = role.keyWinsTitle,
+                            focusAreasLabel = role.focusAreasLabel,
+                            spec = spec,
+                            showTimeline = spec.showTimeline,
+                            isLast = index == uiState.roles.lastIndex,
+                            colors = colors
+                        )
+                    }
+                }
             }
         }
     }

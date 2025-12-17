@@ -27,11 +27,11 @@ import com.furkanozendev.core.designsystem.util.glassGradientBackground
 import com.furkanozendev.feature.portfolio.presentation.home.components.AppCell
 import com.furkanozendev.feature.portfolio.presentation.home.components.LanguageToggleButton
 import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
-import com.furkanozendev.feature.portfolio.presentation.home.widget.ExperienceWidget
-import com.furkanozendev.feature.portfolio.presentation.home.widget.PortfolioFooter
-import com.furkanozendev.feature.portfolio.presentation.home.widget.ProfileWidget
-import com.furkanozendev.feature.portfolio.presentation.home.widget.ProjectsWidget
-import com.furkanozendev.feature.portfolio.presentation.home.widget.TechStackWidget
+import com.furkanozendev.feature.portfolio.presentation.home.widget.experience.ExperienceWidget
+import com.furkanozendev.feature.portfolio.presentation.home.widget.footer.PortfolioFooter
+import com.furkanozendev.feature.portfolio.presentation.home.widget.profile.ProfileWidget
+import com.furkanozendev.feature.portfolio.presentation.home.widget.projects.ProjectsWidget
+import com.furkanozendev.feature.portfolio.presentation.home.widget.techstack.TechStackWidget
 import org.koin.compose.viewmodel.koinViewModel
 
 @Immutable

@@ -12,7 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.furkanozendev.core.designsystem.colors.HomeColors
-import com.furkanozendev.feature.portfolio.presentation.home.widget.ProjectStatusStyle
+import com.furkanozendev.feature.portfolio.presentation.home.widget.projects.ProjectStatusStyle
 
 @Composable
 internal fun ProjectStatusPill(text: String, style: ProjectStatusStyle, colors: HomeColors) {

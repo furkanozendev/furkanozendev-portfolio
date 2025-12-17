@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.furkanozendev.core.designsystem.colors.HomeColors
-import com.furkanozendev.feature.portfolio.presentation.home.widget.ProjectUiModel
+import com.furkanozendev.feature.portfolio.presentation.home.widget.projects.ProjectUiModel
 
 @Composable
 internal fun ProjectActionsRow(project: ProjectUiModel, colors: HomeColors) {

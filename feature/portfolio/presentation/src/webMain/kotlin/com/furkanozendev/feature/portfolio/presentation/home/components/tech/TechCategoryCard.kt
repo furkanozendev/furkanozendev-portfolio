@@ -38,12 +38,14 @@ enum class Emphasis { Primary, Secondary }
 
 @Composable
 internal fun TechCategoryCard(
-    category: TechCategoryUi,
+    category: TechCategoryUi?,
     accent: Color,
     textPrimary: Color,
     textMuted: Color,
     colors: HomeColors
 ) {
+    if (category == null) return
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
