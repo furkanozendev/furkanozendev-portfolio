@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,11 +38,14 @@ internal fun ProjectCardGrid(
             .padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        ProjectBanner(
-            bannerPainter = painterResource(project.bannerPainter),
-            modifier = Modifier
+        Image(
+            painter = painterResource(project.bannerPainter),
+            contentDescription = null,
+            modifier = modifier
                 .fillMaxWidth()
                 .height(140.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
         )
 
         Row(
@@ -76,17 +78,4 @@ internal fun ProjectCardGrid(
 
         ProjectActionsRow(project, colors)
     }
-}
-
-@Composable
-internal fun ProjectBanner(
-    bannerPainter: Painter,
-    modifier: Modifier = Modifier
-) {
-    Image(
-        painter = bannerPainter,
-        contentDescription = null,
-        modifier = modifier.clip(RoundedCornerShape(12.dp)),
-        contentScale = ContentScale.Crop
-    )
 }

@@ -32,7 +32,6 @@ import com.furkanozendev.feature.portfolio.presentation.home.widget.PortfolioFoo
 import com.furkanozendev.feature.portfolio.presentation.home.widget.ProfileWidget
 import com.furkanozendev.feature.portfolio.presentation.home.widget.ProjectsWidget
 import com.furkanozendev.feature.portfolio.presentation.home.widget.TechStackWidget
-import com.furkanozendev.feature.portfolio.presentation.home.widget.WhatImReadingWidget
 import org.koin.compose.viewmodel.koinViewModel
 
 @Immutable
@@ -105,7 +104,7 @@ fun HomeScreen() {
 
                         ProjectsWidget(modifier = Modifier.fillMaxWidth())
 
-                        WhatImReadingWidget(modifier = Modifier.fillMaxWidth())
+                        // WhatImReadingWidget(modifier = Modifier.fillMaxWidth()) TODO Will consider later on
                     }
                 }
 

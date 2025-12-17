@@ -13,10 +13,12 @@ class StringRepositoryImpl(private val client: HttpClient) : StringRepository {
     override val stringsFlow: Flow<Map<String, String>> = _stringsFlow
 
     override suspend fun fetchStrings(code: String) {
-        runCatching {
-            val url = "https://raw.githubusercontent.com/furkanozendev/portfolio/main/data/$code.json"
+        try {
+            val url = "https://raw.githubusercontent.com/furkanozendev/furkanozendev-portfolio/refs/heads/main/data/$code.json"
             val map = client.get(url).body<Map<String, String>>()
             _stringsFlow.value = map
+        } catch (e: Exception) {
+            println(e)
         }
     }
 }

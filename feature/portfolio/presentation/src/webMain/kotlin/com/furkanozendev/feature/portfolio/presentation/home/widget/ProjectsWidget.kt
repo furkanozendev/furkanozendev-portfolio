@@ -28,6 +28,7 @@ import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.project_duelist_banner
 import furkanozendev.feature.portfolio.presentation.generated.resources.project_github_banner
 import furkanozendev.feature.portfolio.presentation.generated.resources.project_portfolio_banner
+import furkanozendev.feature.portfolio.presentation.generated.resources.project_nexkmp_banner
 import org.jetbrains.compose.resources.DrawableResource
 
 enum class ProjectStatusStyle { Live, InProgress, Neutral, Private }
@@ -73,7 +74,7 @@ fun ProjectsWidget(modifier: Modifier = Modifier) {
                 techStack = res.getList("projects_duelist_tech")
             ),
             ProjectUiModel(
-                bannerPainter = Res.drawable.project_github_banner,
+                bannerPainter = Res.drawable.project_nexkmp_banner,
                 title = res["projects_nexkmp_title"],
                 status = res["projects_nexkmp_status"],
                 statusStyle = ProjectStatusStyle.Neutral,
