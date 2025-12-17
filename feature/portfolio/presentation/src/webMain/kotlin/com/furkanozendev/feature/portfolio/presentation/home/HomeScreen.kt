@@ -77,6 +77,7 @@ fun HomeScreen() {
                             .align(Alignment.TopEnd)
                             .padding(horizontal = spec.gutter),
                         initialLanguage = uiState.selectedLanguage,
+                        onLanguageChanged = viewModel::updateLanguage
                     )
 
                     Column(

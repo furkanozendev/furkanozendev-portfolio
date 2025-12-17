@@ -1,40 +1,23 @@
 package com.furkanozendev.feature.portfolio.presentation.home.widget
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,10 +25,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.core.designsystem.colors.LocalHomeColors
+import com.furkanozendev.feature.portfolio.presentation.home.components.GradientBorderAvatar
+import com.furkanozendev.feature.portfolio.presentation.home.components.TypewriterText
 import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.profile_pic
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 
 @Immutable
@@ -120,9 +105,7 @@ fun ProfileWidget(
     modifier: Modifier = Modifier
 ) {
     val res = LocalStringResources.current
-
-    val keywordColor1 = Color(0xFF8BE9FD)
-    val keywordColor2 = Color(0xFFFE7A36)
+    val colors = LocalHomeColors.current
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val spec = rememberProfileWidgetSpec(maxWidth)
@@ -136,7 +119,11 @@ fun ProfileWidget(
                 GradientBorderAvatar(
                     painter = painterResource(Res.drawable.profile_pic),
                     size = spec.avatarSize,
-                    contentDescription = res["name"]
+                    contentDescription = res["name"],
+                    gradient = Brush.linearGradient(
+                        colors = listOf(colors.glowBlue, colors.glowOrange)
+                    ),
+                    background = colors.profileImageBackground
                 )
             },
             text = {
@@ -147,8 +134,10 @@ fun ProfileWidget(
                     titleSize = spec.titleSize,
                     subtitleSize = spec.subtitleSize,
                     taglineSize = spec.taglineSize,
-                    keywordColor1 = keywordColor1,
-                    keywordColor2 = keywordColor2,
+                    keywordColor1 = colors.accentPrimary,
+                    keywordColor2 = colors.accentTertiary,
+                    textPrimary = colors.textPrimary,
+                    backgroundColor = colors.glowBlue,
                     textAlign = spec.textAlign,
                     horizontalAlignment = spec.horizontalAlignment,
                     maxWidth = spec.maxTextWidth
@@ -196,6 +185,8 @@ private fun ProfileTextContent(
     taglineSize: TextUnit,
     keywordColor1: Color,
     keywordColor2: Color,
+    textPrimary: Color,
+    backgroundColor: Color,
     textAlign: TextAlign,
     horizontalAlignment: Alignment.Horizontal,
     maxWidth: Dp,
@@ -211,11 +202,12 @@ private fun ProfileTextContent(
             text = name,
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFFEDEDED),
+                color = textPrimary,
                 fontFamily = FontFamily.Monospace,
                 fontSize = titleSize,
                 lineHeight = (titleSize.value + 2).sp
             ),
+            backgroundColor = backgroundColor,
             textAlign = textAlign
         )
 
@@ -239,93 +231,6 @@ private fun ProfileTextContent(
                 fontSize = taglineSize
             ),
             textAlign = textAlign
-        )
-    }
-}
-
-@Composable
-fun TypewriterText(
-    text: String,
-    style: TextStyle,
-    modifier: Modifier = Modifier,
-    textAlign: TextAlign = TextAlign.Start,
-    enabled: Boolean = true,
-    typingSpeedMs: Long = 55L,
-    cursorBlinkMs: Long = 450L,
-) {
-    var displayed by remember(text, enabled) { mutableStateOf(if (enabled) "" else text) }
-    var showCursor by remember(text, enabled) { mutableStateOf(enabled) }
-
-    LaunchedEffect(text, enabled) {
-        if (!enabled) return@LaunchedEffect
-
-        displayed = ""
-        showCursor = true
-
-        for (i in text.indices) {
-            delay(typingSpeedMs)
-            displayed = text.take(i + 1)
-        }
-
-        repeat(3) {
-            delay(cursorBlinkMs)
-            showCursor = !showCursor
-        }
-        showCursor = false
-    }
-
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = displayed,
-            style = style,
-            textAlign = textAlign
-        )
-
-        if (enabled && showCursor) {
-            Spacer(Modifier.width(6.dp))
-            Box(
-                Modifier
-                    .width(8.dp)
-                    .height(
-                        with(LocalDensity.current) {
-                            (style.lineHeight.takeIf { it != TextUnit.Unspecified } ?: style.fontSize).toDp()
-                        }
-                    )
-                    .background(Color(0xFF3652AD))
-            )
-        }
-    }
-}
-
-@Composable
-fun GradientBorderAvatar(
-    painter: Painter,
-    contentDescription: String?,
-    modifier: Modifier = Modifier,
-    size: Dp = 84.dp,
-    borderWidth: Dp = 3.dp,
-    outerRadius: Dp = 22.dp,
-    innerRadius: Dp = 18.dp,
-    gradient: Brush = Brush.linearGradient(
-        colors = listOf(Color(0xFF3652AD), Color(0xFFFE7A36))
-    ),
-    background: Color = Color(0xFF0D0D12),
-) {
-    Box(
-        modifier = modifier
-            .size(size)
-            .clip(RoundedCornerShape(outerRadius))
-            .background(gradient)
-            .padding(borderWidth)
-            .clip(RoundedCornerShape(innerRadius))
-            .background(background),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painter,
-            contentDescription = contentDescription,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
         )
     }
 }

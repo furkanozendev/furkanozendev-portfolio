@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 interface StringRepository {
     val stringsFlow: Flow<Map<String, String>>
 
-    suspend fun fetchStrings(url: String)
+    suspend fun fetchStrings(code: String)
 }

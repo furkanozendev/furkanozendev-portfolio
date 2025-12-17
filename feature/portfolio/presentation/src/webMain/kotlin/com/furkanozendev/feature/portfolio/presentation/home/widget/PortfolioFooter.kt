@@ -16,14 +16,15 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.furkanozendev.core.designsystem.colors.LocalHomeColors
 import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 
 @Composable
 fun PortfolioFooter(
-    modifier: Modifier = Modifier,
-    textMuted: Color = Color(0xFF9A9A9A)
+    modifier: Modifier = Modifier
 ) {
     val res = LocalStringResources.current
+    val colors = LocalHomeColors.current
     val uriHandler = LocalUriHandler.current
 
     Column(
@@ -36,7 +37,7 @@ fun PortfolioFooter(
         Text(
             text = res["footer_tagline"],
             style = MaterialTheme.typography.bodySmall.copy(
-                color = textMuted,
+                color = colors.textMuted,
                 textAlign = TextAlign.Center
             )
         )
@@ -44,17 +45,17 @@ fun PortfolioFooter(
         Text(
             text = res["footer_copyright"],
             style = MaterialTheme.typography.labelSmall.copy(
-                color = textMuted
+                color = colors.textMuted
             )
         )
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            FooterLink(res["github_title"]) {
+            FooterLink(res["github_title"], colors.accentPrimary) {
                 uriHandler.openUri(res["github_url"])
             }
-            FooterLink(res["linkedin_title"]) {
+            FooterLink(res["linkedin_title"], colors.accentPrimary) {
                 uriHandler.openUri(res["linkedin_url"])
             }
         }
@@ -64,13 +65,14 @@ fun PortfolioFooter(
 @Composable
 private fun FooterLink(
     label: String,
+    color: Color,
     onClick: () -> Unit
 ) {
     Text(
         text = label,
         modifier = Modifier.clickable(onClick = onClick),
         style = MaterialTheme.typography.labelSmall.copy(
-            color = Color(0xFF8BE9FD),
+            color = color,
             fontWeight = FontWeight.Medium
         )
     )

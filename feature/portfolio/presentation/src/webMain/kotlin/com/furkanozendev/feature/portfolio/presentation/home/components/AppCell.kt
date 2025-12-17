@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.furkanozendev.core.designsystem.colors.LocalHomeColors
 import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 import furkanozendev.feature.portfolio.presentation.generated.resources.Res
 import furkanozendev.feature.portfolio.presentation.generated.resources.cv_ic
@@ -88,6 +89,8 @@ private fun SocialTile(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalHomeColors.current
+
     val bg = Color.White.copy(alpha = 0.04f)
     val border = Color.White.copy(alpha = 0.08f)
     val iconBg = Color.White.copy(alpha = 0.06f)
@@ -112,7 +115,7 @@ private fun SocialTile(
                 painter = painterResource(item.icon),
                 contentDescription = item.title,
                 modifier = Modifier.size(26.dp),
-                tint = Color(0xFFEDEDED)
+                tint = colors.textPrimary
             )
         }
 
@@ -122,7 +125,7 @@ private fun SocialTile(
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = Color(0xFFEDEDED)
+            color = colors.textPrimary
         )
     }
 }

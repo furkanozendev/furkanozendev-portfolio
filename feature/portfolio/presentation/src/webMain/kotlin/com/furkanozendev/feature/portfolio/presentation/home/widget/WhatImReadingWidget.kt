@@ -1,25 +1,12 @@
 package com.furkanozendev.feature.portfolio.presentation.home.widget
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Book
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,17 +14,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.furkanozendev.core.designsystem.colors.HomeColors
+import com.furkanozendev.core.designsystem.colors.LocalHomeColors
 import com.furkanozendev.core.designsystem.components.SectionHeader
 import com.furkanozendev.feature.portfolio.presentation.home.components.BentoCard
+import com.furkanozendev.feature.portfolio.presentation.home.components.reading.HighlightedReadingCard
+import com.furkanozendev.feature.portfolio.presentation.home.components.reading.ReadingShowMoreRow
 import com.furkanozendev.feature.portfolio.presentation.home.infra.LocalStringResources
 
 data class ReadingItem(
@@ -127,9 +114,7 @@ fun WhatImReadingWidgetContent(
     onToggleExpanded: () -> Unit,
     onOpen: (ReadingItem) -> Unit
 ) {
-    val textPrimary = Color(0xFFEDEDED)
-    val textMuted = Color(0xFFB0B0B0)
-    val surface = Color.White.copy(alpha = 0.04f)
+    val colors = LocalHomeColors.current
 
     BentoCard(
         modifier = modifier,
@@ -139,7 +124,7 @@ fun WhatImReadingWidgetContent(
         val items = uiState.todayItems
 
         if (items.isEmpty()) {
-            EmptyReadingState(textPrimary, textMuted)
+            EmptyReadingState(colors)
             return@BentoCard
         }
 
@@ -157,16 +142,14 @@ fun WhatImReadingWidgetContent(
             SectionHeader(
                 title = LocalStringResources.current["reading_title"],
                 subtitle = LocalStringResources.current["reading_header_subtitle"],
-                textPrimary = textPrimary,
-                textMuted = textMuted
+                textPrimary = colors.textPrimary,
+                textMuted = colors.textMuted
             )
 
             visibleItems.forEach { item ->
                 HighlightedReadingCard(
                     item = item,
-                    surface = surface,
-                    textPrimary = textPrimary,
-                    textMuted = textMuted,
+                    colors = colors,
                     onOpen = { onOpen(item) }
                 )
             }
@@ -177,7 +160,7 @@ fun WhatImReadingWidgetContent(
                     expanded = expanded,
                     remainingCount = remaining.coerceAtLeast(0),
                     onToggle = onToggleExpanded,
-                    textMuted = textMuted
+                    colors = colors
                 )
             }
         }
@@ -185,106 +168,7 @@ fun WhatImReadingWidgetContent(
 }
 
 @Composable
-private fun HighlightedReadingCard(
-    item: ReadingItem,
-    surface: Color,
-    textPrimary: Color,
-    textMuted: Color,
-    onOpen: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(surface)
-            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
-            .clickable(onClick = onOpen)
-            .padding(14.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    Modifier
-                        .size(8.dp)
-                        .background(Color(0xFF8BE9FD).copy(alpha = 0.8f), CircleShape)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = item.source,
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = textMuted,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
-                    contentDescription = null,
-                    tint = textMuted,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    text = LocalStringResources.current["reading_external"],
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        color = textMuted,
-                        fontWeight = FontWeight.Medium
-                    )
-                )
-            }
-        }
-
-        Text(
-            text = item.title,
-            style = MaterialTheme.typography.titleSmall.copy(
-                color = textPrimary,
-                fontWeight = FontWeight.SemiBold
-            ),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        if (item.tags.isNotEmpty()) {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                item.tags.take(4).forEach { tag -> ReadingTag(tag) }
-                if (item.tags.size > 4) ReadingTag("+${item.tags.size - 4}")
-            }
-        }
-    }
-}
-
-@Composable
-private fun ReadingTag(text: String) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(Color.White.copy(alpha = 0.06f))
-            .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(999.dp))
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall.copy(
-                color = Color(0xFFEDEDED)
-            )
-        )
-    }
-}
-
-@Composable
-private fun EmptyReadingState(textPrimary: Color, textMuted: Color) {
+private fun EmptyReadingState(colors: HomeColors) {
     val res = LocalStringResources.current
     Column(
         modifier = Modifier
@@ -295,53 +179,16 @@ private fun EmptyReadingState(textPrimary: Color, textMuted: Color) {
         Text(
             text = res["reading_empty_title"],
             style = MaterialTheme.typography.titleSmall.copy(
-                color = textPrimary,
+                color = colors.textPrimary,
                 fontWeight = FontWeight.SemiBold
             )
         )
         Text(
             text = res["reading_empty_subtitle"],
             style = MaterialTheme.typography.bodySmall.copy(
-                color = textMuted,
+                color = colors.textMuted,
                 lineHeight = 18.sp
             )
         )
-    }
-}
-
-@Composable
-private fun ReadingShowMoreRow(
-    expanded: Boolean,
-    remainingCount: Int,
-    onToggle: () -> Unit,
-    textMuted: Color
-) {
-    val res = LocalStringResources.current
-    val label = when {
-        expanded -> res["reading_show_less"]
-        remainingCount > 0 -> res["reading_show_n_more", listOf(remainingCount.toString())]
-        else -> res["reading_show_more"]
-    }
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End
-    ) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(999.dp))
-                .background(Color.White.copy(alpha = 0.05f))
-                .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(999.dp))
-                .clickable(onClick = onToggle)
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium.copy(
-                    color = textMuted,
-                    fontWeight = FontWeight.SemiBold
-                )
-            )
-        }
     }
 }

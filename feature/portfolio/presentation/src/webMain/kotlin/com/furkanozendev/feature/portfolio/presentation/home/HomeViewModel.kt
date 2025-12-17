@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class HomeViewModel(
@@ -39,11 +40,17 @@ internal class HomeViewModel(
 
     private fun loadStrings() {
         viewModelScope.launch {
-            syncStrings("en")
+            syncStrings(AppLanguage.EN.value)
         }
     }
 
     fun updateLanguage(appLanguage: AppLanguage) {
-        _uiState.value = _uiState.value.copy(selectedLanguage = appLanguage)
+        viewModelScope.launch {
+            syncStrings(appLanguage.value)
+
+            _uiState.update {
+                it.copy(selectedLanguage = appLanguage)
+            }
+        }
     }
 }
