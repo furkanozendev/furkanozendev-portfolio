@@ -1,44 +1,49 @@
-This is a Kotlin Multiplatform project targeting Web.
+# furkanozendev
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-    - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-      the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-      Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-      folder is the appropriate location.
+Engineering portfolio built with Kotlin and Compose Multiplatform targeting WebAssembly.
 
-### Build and Run Web Application
+## Why this project exists
 
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE's toolbar or run it directly from the terminal:
+This project serves as a technical demonstration of Kotlin Multiplatform (KMP) in a production web environment. The objective was to move beyond the experimental nature of Wasm-based web applications and implement a stable, high-performance site using a shared architectural model. It explores the viability of `wasmJs` for technical portfolios where engineering depth and UI consistency across platforms are prioritized over traditional SEO-heavy web requirements.
 
-- for the Wasm target (faster, modern browsers):
-    - on macOS/Linux
-      ```shell
-      ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-      ```
-    - on Windows
-      ```shell
-      .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
-      ```
-- for the JS target (slower, supports older browsers):
-    - on macOS/Linux
-      ```shell
-      ./gradlew :composeApp:jsBrowserDevelopmentRun
-      ```
-    - on Windows
-      ```shell
-      .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
-      ```
+## Tech stack
 
----
+*   **Language**: Kotlin 2.1.0
+*   **UI Framework**: Compose Multiplatform (wasmJs)
+*   **Architecture**: Clean Architecture with Feature-based modularization
+*   **Dependency Injection**: Koin
+*   **Networking**: Ktor Client
+*   **State Management**: kotlinx.coroutines StateFlow
+*   **Hosting**: Cloudflare Pages
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+## Architecture overview
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack
-channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+The application is structured into clearly defined layers to enforce separation of concerns and maintainability:
+
+*   **Presentation**: MVVM-based UI logic using Compose. State is managed via `StateFlow`, ensuring a unidirectional data flow from the ViewModel to the Composable functions.
+*   **Domain**: Contains business logic, entities, and repository interfaces. This layer is strictly independent of UI components and external frameworks.
+*   **Data**: Implemented repositories, data sources (Ktor for remote, local providers), and DTOs.
+*   **Core - Design System**: A dedicated module housing the theme, color tokens, and reusable UI components, ensuring visual consistency across the application.
+
+## Web and WASM considerations
+
+The choice of `wasmJs` over the traditional `js` target was driven by performance and the maturity of the Kotlin/Wasm toolchain. 
+
+*   **Runtime Performance**: Wasm provides near-native execution speed, which is particularly noticeable in complex Compose animations and layout calculations.
+*   **SEO and Hydration**: As `wasmJs` renders directly to a Canvas element via Skia, traditional SEO and hydration techniques do not apply. This is an intentional trade-off; the project focuses on execution quality and engineering demonstration rather than search engine discoverability.
+*   **Binary Delivery**: The build processes the application into a compiled Wasm binary, significantly reducing the overhead compared to high-level JavaScript execution.
+
+## What this project demonstrates
+
+*   **Compose Multiplatform proficiency**: Advanced usage of the Compose runtime in a non-Android environment.
+*   **Multi-module architecture**: Effective use of Kotlin project structuring and dependency management.
+*   **Wasm delivery**: Knowledge of modern web deployment standards and performance optimization.
+*   **CI/CD engineering**: Automated build and deployment pipelines for static web platforms.
+
+## Live site
+
+[furkanozen.com](https://furkanozen.com)
+
+## Note
+
+This is a personal portfolio and an open-source reference for Kotlin/Wasm development. Feel free to explore the architecture and implementation details.
